@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "9473829219",
+    "firebase_url": "https://crud-flutter-6c754.firebaseio.com",
+    "project_id": "crud-flutter-6c754",
+    "storage_bucket": "crud-flutter-6c754.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:9473829219:android:2f23683c87beb68f304b56",
+        "android_client_info": {
+          "package_name": "com.example.manyas_v2"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "9473829219-o40g5gsqi0k6mcm8m40tgtbgpq12kgq0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBLMRH9_l2dbwshbmwkL8KE0LmE1VgZEjM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "9473829219-o40g5gsqi0k6mcm8m40tgtbgpq12kgq0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
