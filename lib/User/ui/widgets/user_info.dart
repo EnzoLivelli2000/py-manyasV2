@@ -16,7 +16,7 @@ class UserInfo extends StatelessWidget {
           shape: BoxShape.rectangle,
           image: DecorationImage(
             fit: BoxFit.cover,
-            image: AssetImage(userModel.photoURL),
+            image: NetworkImage(userModel.photoURL),
             //image: NetworkImage(user.photoURL),
           )
       ),

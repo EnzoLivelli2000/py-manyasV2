@@ -6,15 +6,16 @@ import 'package:manyas_v2/User/ui/widgets/user_info.dart';
 
 class ProfileHeader extends StatelessWidget {
   UserModel userModel;
+  int indexTap;
 
-  ProfileHeader({Key key, this.userModel});
+  ProfileHeader({Key key, this.userModel, this.indexTap});
   @override
   Widget build(BuildContext context) {
-    return showProfileData(userModel);
+    return showProfileData(userModel, indexTap);
   }
 }
 
-Widget showProfileData(UserModel userModel){
+Widget showProfileData(UserModel userModel, int indexTap){
   final title = Text(
     'Profile',
     style: TextStyle(
@@ -40,7 +41,7 @@ Widget showProfileData(UserModel userModel){
           ],
         ),
         UserInfo(userModel: userModel,),
-        ButtonsBar(),
+        ButtonsBar(indexTap: indexTap),
         //ChoosePost(),
       ],
     ),

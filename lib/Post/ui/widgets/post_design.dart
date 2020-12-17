@@ -1,27 +1,30 @@
+import 'package:bloc_provider/bloc_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:manyas_v2/Post/model/post_model.dart';
+import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/model/user_model.dart';
 
 class PostDesign extends StatelessWidget {
   PostModel postModel;
+  UserBloc userBloc;
   UserModel userModel;
 
   PostDesign(this.postModel, this.userModel);
 
   @override
   Widget build(BuildContext context) {
+    userBloc = BlocProvider.of<UserBloc>(context);
     final photoCard = Container(
-      margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 30, left: 30),
+      margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 15, left: 15),
       height: 220.0,
       //width: 350,
       decoration: BoxDecoration(
           image: DecorationImage(
             fit: BoxFit.cover,
-            image: AssetImage(postModel.V_I),
+            image: NetworkImage(postModel.V_I),
           ),
           borderRadius: BorderRadius.all(Radius.circular(20.0)),
-          color: Colors.red,
           /*boxShadow: <BoxShadow>[
             BoxShadow(
                 color: Colors.black38,
@@ -32,7 +35,7 @@ class PostDesign extends StatelessWidget {
     );
 
     final userData = Container(
-      margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 30, left: 30),
+      margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 15, left: 15),
       child: Row(
         children: <Widget>[
           Container(
@@ -44,8 +47,8 @@ class PostDesign extends StatelessWidget {
                 shape: BoxShape.rectangle,
                 image: DecorationImage(
                   fit: BoxFit.cover,
-                  image: AssetImage(userModel.photoURL),
-                  //image: NetworkImage(user.photoURL),
+                  image: NetworkImage(userModel.photoURL),
+                  //image: AssetImage('assets/images/post_photo.PNG')
                 )),
           ),
           Column(
@@ -59,7 +62,7 @@ class PostDesign extends StatelessWidget {
                     fontFamily: 'Lato',
                     decoration: TextDecoration.none,
                   )),
-              Text(postModel.lastTimePost,
+              Text('2 days ago',
                   style: TextStyle(
                     fontSize: 12.0,
                     fontWeight: FontWeight.bold,
@@ -74,8 +77,9 @@ class PostDesign extends StatelessWidget {
     );
 
     final contentPost = Container(
-      margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 30, left: 30),
-      child: Text(postModel.content,
+      margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 25, left: 25),
+      alignment: AlignmentDirectional.bottomStart,
+      child: Text(postModel.description,
           style: TextStyle(
             fontSize: 15.0,
             fontWeight: FontWeight.bold,
@@ -86,7 +90,7 @@ class PostDesign extends StatelessWidget {
     );
 
     final likes_comments = Container(
-      margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 30, left: 30),
+      margin: EdgeInsets.only(bottom: 10.0),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
@@ -107,13 +111,28 @@ class PostDesign extends StatelessWidget {
                 Icons.comment,
                 color: Color(0xFFF87125),
               ),
-              label: Text(postModel.comment.toString())),
+              label: Text('128')),
         ],
       ),
     );
 
+    //enum SettingOptions{userBloc.deletePost(Po)}
+
+    final popUpMenuOption = Container(
+      /*child: PopupMenuButton<UserBloc>(
+          itemBuilder: (BuildContext context){
+            return <PopupMenuButton<UserBloc>>[
+              PopupMenuItem(
+                child: Text('Eliminar'),
+                value: userBloc.deletePost(postModel),
+              ),
+            ];
+          }
+      ),*/
+    );
+
     return Container(
-      margin: EdgeInsets.only(top: 80.0, bottom: 10.0, right: 30, left: 30),
+      margin: EdgeInsets.only(top: 70.0, bottom: 10.0, right: 15, left: 15),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
         color: Colors.white,

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:manyas_v2/Party/ui/screens/prueba_party.dart';
-import 'package:manyas_v2/Post/ui/screens/prueba_post.dart';
+import 'package:manyas_v2/Post/ui/screens/add_post_screen.dart';
 import 'package:manyas_v2/Storie/ui/screens/prueba_storie.dart';
 import 'package:manyas_v2/User/model/user_model.dart';
 import 'package:manyas_v2/User/ui/screens/profile_content.dart';

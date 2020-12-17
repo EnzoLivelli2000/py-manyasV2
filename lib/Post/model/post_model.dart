@@ -1,18 +1,27 @@
-class PostModel {
-  final String content;
-  final String V_I;
-  final int likes;
-  final int comment;
-  final String lastTimePost;
+import 'package:flutter/cupertino.dart';
 
-  //final String user_owner_id;
-  //final String user_liked_id;
+class PostModel {
+  final String description;
+
+  //final String lastTimePost;
+  final String V_I;
+  final String location;
+  /*final String user_liked_id;
+  final String user_owner_id;*/
+
+  bool status;
+  int likes;
+  String pid;
 
   PostModel({
-    this.V_I,
-    this.likes,
-    this.content,
-    this.comment,
-    this.lastTimePost,
+      @required this.description,
+      @required this.location,
+      @required this.V_I,
+      this.likes,
+      this.status,
+      this.pid
+      //this.lastTimePost,
+      /*this.user_liked_id,
+      this.user_owner_id*/
   });
 }

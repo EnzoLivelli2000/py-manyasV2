@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/model/user_model.dart';
 import 'package:manyas_v2/User/ui/screens/profile_screen.dart';
+import 'package:manyas_v2/screens/button_navigation_bar_principal_menu.dart';
 import 'package:manyas_v2/widgets/background1.dart';
 import 'package:manyas_v2/widgets/background2.dart';
 import 'package:manyas_v2/widgets/button_orange.dart';
@@ -32,7 +33,7 @@ class _LoginScreenState extends State<LoginScreen> {
         if(!snapshot.hasData || snapshot.hasError){
           return signInGoogleUI();
         }else{
-          return ProfileScreen();
+          return ButtonNavigationBarPrincipalMenu();
         }
       },
     );
@@ -85,14 +86,14 @@ class _LoginScreenState extends State<LoginScreen> {
                 children: <Widget>[
                   ButtonOrange(
                     titleButton: 'Sign in with Google',
-                    onPressed: () {
-                      userBloc.signIn().then((UserCredential userC) => userBloc.updateUserData(UserModel(
+                    onPressed: () async {
+                      await userBloc.signIn().then((UserCredential userC) => userBloc.updateUserData(UserModel(
                         uid: userC.user.uid,
                         name: userC.user.displayName,
                         email: userC.user.email,
                         photoURL: userC.user.photoURL,
                       ))
-                      ).catchError((e) => print('El error es -> ${e.toString()}'));
+                      ).catchError((e) => print('El error al hacer Sign in with Google -> ${e.toString()}'));
                       print('se presionó -> Sign in with Google ');
                     },
                     width: 230,

@@ -1,37 +1,45 @@
+import 'package:bloc_provider/bloc_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:manyas_v2/Party/ui/screens/prueba_party.dart';
 import 'package:manyas_v2/Post/model/post_model.dart';
 import 'package:manyas_v2/Post/ui/widgets/post_design.dart';
 import 'package:manyas_v2/Storie/ui/screens/prueba_storie.dart';
+import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/model/user_model.dart';
 
 class ProfileContent extends StatelessWidget {
+  UserBloc userBloc;
   UserModel userModel;
   int index;
 
   ProfileContent(this.userModel, this.index);
 
-  PostModel postModel1 = PostModel(
-      V_I: 'assets/images/post_photo.PNG',
-      likes: 345,
-      comment: 68,
-      content:
-          'Esta foto fue del viaje a Cancún que hizo antes de la cuarentena. Todo allá era tam increible y maravilloso',
-      lastTimePost: '5 min');
-
-  PostModel postModel2 = PostModel(
-      V_I: 'assets/images/post_photo_2.PNG',
-      likes: 515,
-      comment: 128,
-      content:
-          'Esta foto fue del viaje a Cancún que hizo antes de la cuarentena. Todo allá era tam increible y maravilloso.Esta foto fue del viaje a Cancún que hizo antes de la cuarentena. Todo allá era tam increible y maravilloso.Esta foto fue del viaje a Cancún que hizo antes de la cuarentena. Todo allá era tam increible y maravilloso.Esta foto fue del viaje a Cancún que hizo antes de la cuarentena. Todo allá era tam increible y maravilloso',
-      lastTimePost: '2 dias');
-
   @override
   Widget build(BuildContext context) {
+    userBloc = BlocProvider.of<UserBloc>(context);
     switch (index) {
       case 0:
-        return PostDesign(postModel2, userModel);
+        return StreamBuilder(
+          stream: userBloc.myPostsListStream(userModel.uid),
+          builder: (context, AsyncSnapshot snapshot){
+            switch(snapshot.connectionState){
+              case ConnectionState.waiting:
+                return CircularProgressIndicator();
+              case ConnectionState.done:
+                return Column(
+                    children: userBloc.buildMyPosts(snapshot.data.documents, userModel)
+                );
+              case ConnectionState.active:
+                return Column(
+                    children: userBloc.buildMyPosts(snapshot.data.documents, userModel)
+                );
+              case ConnectionState.none:
+              default:
+                return CircularProgressIndicator();
+            }
+          },
+        );
+        //PostDesign(postModel2, userModel);
         break;
       case 1:
         return PruebaStorie();

@@ -1,4 +1,6 @@
+import 'package:bloc_provider/bloc_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/model/user_model.dart';
 import 'package:manyas_v2/User/ui/screens/profile_content.dart';
 import 'package:manyas_v2/User/ui/screens/profile_header.dart';
@@ -10,16 +12,9 @@ class ProfileScreen extends StatefulWidget {
   _ProfileScreenState createState() => _ProfileScreenState();
 }
 
-var userAux = UserModel(
-  uid: 'contraseña',
-  name: 'Enzo Liv',
-  email: 'enzo.livelli@gmail.com',
-  followers: 654,
-  photoURL: 'assets/images/profile_photo.PNG',
-);
-
 class _ProfileScreenState extends State<ProfileScreen> {
   int indexTap = 0;
+  UserBloc userBloc;
 
   void onTapTapped(int index) {
     setState(() {
@@ -28,76 +23,123 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Stack(children: <Widget>[
-      Background3(),
-      ListView(
+    userBloc = BlocProvider.of<UserBloc>(context);
+
+    return StreamBuilder(
+      stream: userBloc.authStatus,
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting:
+            return CircularProgressIndicator();
+          case ConnectionState.none:
+            return CircularProgressIndicator();
+          case ConnectionState.active:
+            return showProfileData(snapshot);
+          case ConnectionState.done:
+            return showProfileData(snapshot);
+          default:
+        }
+      },
+    );
+  }
+
+  Widget showProfileData(AsyncSnapshot snapshot) {
+    if (!snapshot.hasData || snapshot.hasError) {
+      print('No logueado');
+      return Stack(
         children: <Widget>[
-          ProfileHeader(userModel: userAux),
-//        ChoosePost(userModel: userAux),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Container(
-                child: GestureDetector(
-                  onTap: () {
-                    onTapTapped(0);
-                    print('se solicita crear un post');
-                  },
-                  child: Text(
-                    'Post',
-                    style: TextStyle(
-                      fontSize: 19.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontFamily: 'Lato',
-                      decoration: TextDecoration.none,
-                    ),
-                  ),
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.only(right: 35, left: 40),
-                child: GestureDetector(
-                  onTap: () {
-                    onTapTapped(1);
-                    print('se solicita crear un Event');
-                  },
-                  child: Text(
-                    'Storie',
-                    style: TextStyle(
-                      fontSize: 19.0,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontFamily: 'Lato',
-                      decoration: TextDecoration.none,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                ),
-              ),
-              Container(
-                //margin: EdgeInsets.only(right: 25, left: 25),
-                child: GestureDetector(
-                    onTap: () {
-                      onTapTapped(2);
-                      print('se solicita crear un Stories');
-                    },
-                    child: Text('Event',
-                        style: TextStyle(
-                          fontSize: 19.0,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
-                          fontFamily: 'Lato',
-                          decoration: TextDecoration.none,
-                        ))),
-              ),
-            ],
+          ListView(
+            children: <Widget>[Text('Usuario no logueado. Haz Login')],
           ),
-          ProfileContent(userAux, indexTap),
         ],
-      )
-    ]);
+      );
+    } else {
+      print('Logueado');
+
+      var userAux = UserModel(
+        uid: snapshot.data.uid,
+        name: snapshot.data.displayName,
+        email: snapshot.data.email,
+        photoURL: snapshot.data.photoUrl,
+        followers: 654,
+      );
+
+      return Stack(children: <Widget>[
+        Background3(),
+        ListView(
+          children: <Widget>[
+            ProfileHeader(userModel: userAux, indexTap: indexTap),
+//        ChoosePost(userModel: userAux),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  child: GestureDetector(
+                    onTap: () {
+                      onTapTapped(0);
+                      print('se solicita crear un post');
+                    },
+                    child: Text(
+                      'Post',
+                      style: TextStyle(
+                        fontSize: 19.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontFamily: 'Lato',
+                        decoration: TextDecoration.none,
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(right: 35, left: 40),
+                  child: GestureDetector(
+                    onTap: () {
+                      onTapTapped(1);
+                      print('se solicita crear un Event');
+                    },
+                    child: Text(
+                      'Storie',
+                      style: TextStyle(
+                        fontSize: 19.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontFamily: 'Lato',
+                        decoration: TextDecoration.none,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                Container(
+                  //margin: EdgeInsets.only(right: 25, left: 25),
+                  child: GestureDetector(
+                      onTap: () {
+                        onTapTapped(2);
+                        print('se solicita crear un Stories');
+                      },
+                      child: Text('Event',
+                          style: TextStyle(
+                            fontSize: 19.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            fontFamily: 'Lato',
+                            decoration: TextDecoration.none,
+                          ))),
+                ),
+              ],
+            ),
+            ProfileContent(userAux, indexTap),
+          ],
+        )
+      ]);
+    }
   }
 }
-

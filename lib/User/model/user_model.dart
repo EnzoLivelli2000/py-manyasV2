@@ -3,7 +3,7 @@ class UserModel {
   final String name;
   final String email;
   final String photoURL;
-  final int followers;
+  int followers;
 
   UserModel({
     this.uid,
