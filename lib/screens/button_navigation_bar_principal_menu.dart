@@ -15,16 +15,16 @@ class ButtonNavigationBarPrincipalMenu extends StatelessWidget {
         tabBar: CupertinoTabBar(
             items: [
               BottomNavigationBarItem(
-                  icon: Icon(Icons.home, color: Colors.indigo),
-                  title: Text("")
+                  icon: Icon(Icons.home, color: Color(0xFFF87125),),
+                  title: Text("Home")
               ),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.search, color: Colors.indigo),
-                  title: Text("")
+                  icon: Icon(Icons.search, color: Color(0xFFF87125),),
+                  title: Text("Search")
               ),
               BottomNavigationBarItem(
-                  icon: Icon(Icons.person, color: Colors.indigo),
-                  title: Text("")
+                  icon: Icon(Icons.person, color: Color(0xFFF87125),),
+                  title: Text("Profile")
               ),
             ]
         ),

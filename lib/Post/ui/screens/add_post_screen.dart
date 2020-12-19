@@ -24,11 +24,12 @@ class AddPostScreen extends StatefulWidget {
 }
 
 class _AddPostScreenState extends State<AddPostScreen> {
+  final _controllerDescriptionPost = TextEditingController();
+  final _controllerLocationPost = TextEditingController();
+
   @override
   Widget build(BuildContext context) {
     UserBloc userBloc = BlocProvider.of<UserBloc>(context);
-    final _controllerDescriptionPost = TextEditingController();
-    final _controllerLocationPost = TextEditingController();
 
     return Scaffold(
       body: Stack(
@@ -67,6 +68,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
             child: ListView(
               children: <Widget>[
                 Container(
+                  margin: EdgeInsets.only(top: 30.0, bottom: 10.0, right: 17, left: 17),
                   alignment: Alignment.center,
                   child: CardImageWithFabIcon(
                     pathImage: widget.image.path,
@@ -117,6 +119,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                                     V_I : urlImage,
                                     likes: 0,
                                     status: true,
+                                    dateTimeid: DateTime.now().toString(),
                                   )).whenComplete(() {
                                     print('Proceso terminado');
                                     Navigator.pop(context);

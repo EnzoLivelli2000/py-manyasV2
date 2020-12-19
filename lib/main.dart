@@ -1,7 +1,7 @@
 import 'package:bloc_provider/bloc_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:manyas_v2/User/bloc/user_bloc.dart';
-import 'package:manyas_v2/screens/login_screen.dart';
+import 'package:manyas_v2/screens/login_screen_with_google.dart';
 import 'package:firebase_core/firebase_core.dart';
 
 void main()async {

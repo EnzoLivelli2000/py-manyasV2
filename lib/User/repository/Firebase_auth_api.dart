@@ -5,7 +5,7 @@ class FirebaseAuthAPI {
   static FirebaseAuth _auth = FirebaseAuth.instance; // nos permite acceder a toda las funcionalidades de firebase authentication
   GoogleSignIn googleSignIn = GoogleSignIn();
 
-  Future<UserCredential> signIn() async{
+  Future<UserCredential> signInGoogle() async{
     GoogleSignInAccount googleSignInAccount = await googleSignIn.signIn();
     GoogleSignInAuthentication gSA = await googleSignInAccount.authentication;
 
@@ -15,7 +15,12 @@ class FirebaseAuthAPI {
     return user;
   }
 
-  signInWithGoogle() async {
+  Future<UserCredential> signInEmailPassword(String _email, String _password) async{
+    final UserCredential user = await _auth.createUserWithEmailAndPassword(email: _email, password: _password).catchError((onError) => print('Error al usar la funcion signInEmailPassword ${onError}'));
+    return user;
+  }
+
+  signInWithGoogle() async { //video de youtube
     GoogleSignIn googleSignIn = GoogleSignIn();
     final acc = await googleSignIn.signIn();
     final auth = await acc.authentication;

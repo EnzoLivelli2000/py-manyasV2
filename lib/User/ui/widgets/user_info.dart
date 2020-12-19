@@ -24,21 +24,27 @@ class UserInfo extends StatelessWidget {
     final userInfo = Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
-        Container(
-            margin: EdgeInsets.only(
-                bottom: 5.0
-            ),
-            child: Text(
-                userModel.name,
-                style: TextStyle(
-                  fontSize: 19.0,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black,
-                  fontFamily: 'Lato',
-                  decoration: TextDecoration.none,
-                )
-            )
-        ),
+          Container(
+             /* margin: EdgeInsets.only(
+                  bottom: 5.0
+              ),*/
+              padding: new EdgeInsets.only(right: 13.0),
+              child: Expanded(
+                child: Text(
+                    userModel.name.length > 11? '${userModel.name.substring(0,15)} ...': userModel.name,
+                    maxLines: 1,
+                    //softWrap: false,
+                    overflow: TextOverflow.fade,
+                    style: TextStyle(
+                      fontSize: 19.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      fontFamily: 'Lato',
+                      decoration: TextDecoration.none,
+                    )
+                ),
+              )
+          ),
         Text(
             userModel.email,
             style: TextStyle(

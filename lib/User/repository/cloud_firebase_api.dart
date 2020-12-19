@@ -34,24 +34,23 @@ class CloudFirestoreAPI {
       'likes': post.likes,
       'userOwner': _db.doc('${USERS}/${uid}'),
       'status': post.status,
+      'dateTimeid': post.dateTimeid
     }).then((DocumentReference dr) {
       dr.get().then((DocumentSnapshot snapshot) {
         DocumentReference refUsers = _db.collection(USERS).doc(uid);
         refUsers.updateData({
-          'myPosts':
-              FieldValue.arrayUnion([_db.doc('${USERS}/${snapshot.id}')]),
+          'myPosts': FieldValue.arrayUnion([_db.doc('${USERS}/${snapshot.id}')]),
         });
-        DocumentReference refPost = _db.collection(POSTS).doc(snapshot.id);
-        refPost.updateData({
+        DocumentReference postUpdate = _db.collection(POSTS).doc(snapshot.id);
+        postUpdate.updateData({
           'pid': snapshot.id,
         });
-        post.pid = snapshot.id;
       });
     });
   }
 
-  List<PostDesign> buildMyPosts(
-      List<DocumentSnapshot> placesListSnapshot, UserModel userModel) {
+  List<PostDesign> buildMyPosts(List<DocumentSnapshot> placesListSnapshot,
+      UserModel userModel) {
     List<PostDesign> profilePost = List<PostDesign>();
     placesListSnapshot.forEach((p) {
       profilePost.add(PostDesign(
@@ -61,6 +60,7 @@ class CloudFirestoreAPI {
             V_I: p.data()['urlImage'],
             likes: p.data()['likes'],
             status: p.data()['status'],
+            dateTimeid: p.data()['dateTimeid']
           ),
           userModel));
     });
@@ -69,25 +69,32 @@ class CloudFirestoreAPI {
 
   Future<void> deletePost(PostModel postModel) async {
     String uid = await _auth.currentUser.uid;
+    QuerySnapshot querySnapshot = await Firestore.instance.collection(POSTS)
+        .getDocuments();
+    print('querySnapshot : ${querySnapshot}');
+    //var postToDelete = querySnapshot.documents.where((element) => element.data()['pid'] == postModel.pid);
+    for (int i = 0; i < querySnapshot.documents.length; i++) {
+      var a = querySnapshot.documents[i];
+      print('Firebase: ${a.data()['dateTimeid']}  PostModel: ${postModel.dateTimeid}');
+      if (a.data()['dateTimeid'] == postModel.dateTimeid) {
+        CollectionReference postRef = _db.collection(POSTS);
+        await postRef.doc(a.data()['pid']).delete().
+        then((value) =>
+            print('se borró el post en la collection POSTS')
+        ).
+        catchError((onError) =>
+            print('Error al borrar el post, cloudFirebase API: ${onError}'));
+        DocumentReference refUsers = _db.collection(USERS).doc(uid);
+        await refUsers.updateData({
+          'myPosts': FieldValue.arrayRemove([_db.doc('${USERS}/${a.data()['pid']}')]),
+        }).then((value) =>
+            print('se borró el post -> (${a.data()['pid']}) en la lista de usuario -> (${refUsers.id})')
 
-    DocumentReference documentReference =
-        await Firestore.instance.collection(POSTS).doc(postModel.pid);
-    DocumentReference refUsers = _db.collection(USERS).doc(uid);
-    CollectionReference postRef = _db.collection(POSTS);
-    documentReference.get().then((DocumentSnapshot snapshot) {
-      postRef
-          .doc(snapshot.id)
-          .delete()
-          .then((v) => print('Se borró el producto'))
-          .catchError((onError) => print('Error ${onError}'));
-
-      refUsers
-          .updateData({
-            'myPosts': FieldValue.arrayRemove(
-                [_db.doc('${USERS}/${snapshot.data()['pid']}')]),
-          })
-          .then((value) => print('se borró el producto de la lista del usuario correspondiente'))
-          .catchError((onError) => print('Error ${onError}'));
-    });
+        ).
+        catchError((onError) => print('Error ${onError}'));
+      }else{
+        print('no se encontró el post que desea borrar');
+      }
+    }
   }
 }

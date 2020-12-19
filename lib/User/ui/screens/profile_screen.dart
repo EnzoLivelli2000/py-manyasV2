@@ -37,9 +37,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
       builder: (BuildContext context, AsyncSnapshot snapshot) {
         switch (snapshot.connectionState) {
           case ConnectionState.waiting:
-            return CircularProgressIndicator();
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+              ],
+            );
           case ConnectionState.none:
-            return CircularProgressIndicator();
+            return Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(),
+              ],
+            );
           case ConnectionState.active:
             return showProfileData(snapshot);
           case ConnectionState.done:

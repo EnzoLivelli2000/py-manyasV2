@@ -14,7 +14,7 @@ class Background2 extends StatelessWidget {
 Widget BackgroundColor (screenWidth, screenHeight){
   return Container(
     width: screenWidth,
-    height: screenHeight * 0.45,
+    height: screenHeight,
     decoration: BoxDecoration(
       gradient: LinearGradient(
           colors: [
@@ -27,18 +27,6 @@ Widget BackgroundColor (screenWidth, screenHeight){
           tileMode: TileMode.clamp
       ),
       //borderRadius: BorderRadius.only(bottomLeft: Radius.circular(20), bottomRight:Radius.circular(20)),
-    ),
-    child: FittedBox(
-      fit: BoxFit.none,
-      alignment: Alignment(-1.5, -0.8),
-      child: Container(
-        width: screenHeight,
-        height: screenHeight,
-        decoration: BoxDecoration(
-            color: Color.fromRGBO(0, 0, 0, 0.05),
-            borderRadius: BorderRadius.circular(screenHeight / 2)
-        ),
-      ),
     ),
   );
 }

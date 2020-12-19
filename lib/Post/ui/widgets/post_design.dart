@@ -1,4 +1,5 @@
 import 'package:bloc_provider/bloc_provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:manyas_v2/Post/model/post_model.dart';
@@ -20,12 +21,12 @@ class PostDesign extends StatelessWidget {
       height: 220.0,
       //width: 350,
       decoration: BoxDecoration(
-          image: DecorationImage(
-            fit: BoxFit.cover,
-            image: NetworkImage(postModel.V_I),
-          ),
-          borderRadius: BorderRadius.all(Radius.circular(20.0)),
-          /*boxShadow: <BoxShadow>[
+        image: DecorationImage(
+          fit: BoxFit.cover,
+          image: CachedNetworkImageProvider(postModel.V_I),
+        ),
+        borderRadius: BorderRadius.all(Radius.circular(20.0)),
+        /*boxShadow: <BoxShadow>[
             BoxShadow(
                 color: Colors.black38,
                 blurRadius: 10.0,
@@ -54,7 +55,8 @@ class PostDesign extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(userModel.name,
+              Text(userModel.name.length > 11? '${userModel.name.substring(0,15)} ...': userModel.name,
+                  overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 17.0,
                     fontWeight: FontWeight.bold,
@@ -119,17 +121,20 @@ class PostDesign extends StatelessWidget {
     //enum SettingOptions{userBloc.deletePost(Po)}
 
     final popUpMenuOption = Container(
-      /*child: PopupMenuButton<UserBloc>(
-          itemBuilder: (BuildContext context){
-            return <PopupMenuButton<UserBloc>>[
-              PopupMenuItem(
-                child: Text('Eliminar'),
-                value: userBloc.deletePost(postModel),
-              ),
-            ];
-          }
-      ),*/
-    );
+        margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 15, left: 15),
+        child: IconButton(
+          icon: Icon(Icons.clear,color: Color(0xFFFF0000),),
+          onPressed: () async {
+            print('se presionó: borrar post');
+            await userBloc
+                .deletePost(postModel)
+                .then((value) =>
+                    ('se borró de manera exitosa el post selecionado '))
+                .catchError((onError) {
+              print('Error al borrar el post ${onError}');
+            });
+          },
+        ));
 
     return Container(
       margin: EdgeInsets.only(top: 70.0, bottom: 10.0, right: 15, left: 15),
@@ -147,7 +152,10 @@ class PostDesign extends StatelessWidget {
       ),
       child: Column(
         children: <Widget>[
-          userData,
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [userData, popUpMenuOption],
+          ),
           photoCard,
           contentPost,
           likes_comments,

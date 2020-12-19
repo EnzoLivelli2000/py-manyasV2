@@ -25,6 +25,7 @@ class UserBloc implements Bloc{
     return _auth_repository.signInFirebase();
   }
 
+  Future<UserCredential> signInEmailPassword(String _email, String _password) => _auth_repository.signInEmailPassword( _email, _password);
   signInWithGoogle() => _auth_repository.signInWithGoogle();
 
   //Case 2. Hacer Sign out

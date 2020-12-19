@@ -19,26 +19,7 @@ class ProfileContent extends StatelessWidget {
     userBloc = BlocProvider.of<UserBloc>(context);
     switch (index) {
       case 0:
-        return StreamBuilder(
-          stream: userBloc.myPostsListStream(userModel.uid),
-          builder: (context, AsyncSnapshot snapshot){
-            switch(snapshot.connectionState){
-              case ConnectionState.waiting:
-                return CircularProgressIndicator();
-              case ConnectionState.done:
-                return Column(
-                    children: userBloc.buildMyPosts(snapshot.data.documents, userModel)
-                );
-              case ConnectionState.active:
-                return Column(
-                    children: userBloc.buildMyPosts(snapshot.data.documents, userModel)
-                );
-              case ConnectionState.none:
-              default:
-                return CircularProgressIndicator();
-            }
-          },
-        );
+        return PostContent();
         //PostDesign(postModel2, userModel);
         break;
       case 1:
@@ -48,5 +29,53 @@ class ProfileContent extends StatelessWidget {
         return PruebaParty();
         break;
     }
+  }
+
+  Widget PostContent() {
+    return StreamBuilder(
+      stream: userBloc.myPostsListStream(userModel.uid),
+      builder: (context, AsyncSnapshot snapshot) {
+        switch (snapshot.connectionState) {
+          case ConnectionState.waiting:
+            return Container(
+              margin: EdgeInsets.only(top: 120),
+              alignment: Alignment.center,
+              child: Text(
+                'Loading ...',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 25.0,
+                  fontFamily: 'Lato',
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            );
+          case ConnectionState.none:
+            return Container(
+              margin: EdgeInsets.only(top: 120),
+              alignment: Alignment.center,
+              child: Text(
+                'Loading ...',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 25.0,
+                  fontFamily: 'Lato',
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            );
+          case ConnectionState.done:
+            return Column(
+                children:
+                    userBloc.buildMyPosts(snapshot.data.documents, userModel));
+          case ConnectionState.active:
+            return Column(
+                children:
+                    userBloc.buildMyPosts(snapshot.data.documents, userModel));
+          default:
+            return CircularProgressIndicator();
+        }
+      },
+    );
   }
 }

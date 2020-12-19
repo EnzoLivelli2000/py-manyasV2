@@ -6,6 +6,7 @@ import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/model/user_model.dart';
 import 'package:manyas_v2/User/ui/screens/profile_screen.dart';
 import 'package:manyas_v2/screens/button_navigation_bar_principal_menu.dart';
+import 'package:manyas_v2/screens/login_screen_with_email_password.dart';
 import 'package:manyas_v2/widgets/background1.dart';
 import 'package:manyas_v2/widgets/background2.dart';
 import 'package:manyas_v2/widgets/button_orange.dart';
@@ -17,21 +18,15 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-  UserBloc userBloc;
 
   @override
   Widget build(BuildContext context) {
-    userBloc = BlocProvider.of(context);
-
-    return handlecurrentSession();
-  }
-
-  Widget handlecurrentSession() {
+    UserBloc userBloc = BlocProvider.of(context);
     return StreamBuilder(
       stream: userBloc.authStatus,
       builder: (BuildContext context, AsyncSnapshot snapshot){
         if(!snapshot.hasData || snapshot.hasError){
-          return signInGoogleUI();
+          return signInGoogleUI(userBloc);
         }else{
           return ButtonNavigationBarPrincipalMenu();
         }
@@ -39,7 +34,7 @@ class _LoginScreenState extends State<LoginScreen> {
     );
   }
 
-  Widget signInGoogleUI() {
+  Widget signInGoogleUI(UserBloc userBloc) {
     return Scaffold(
       body: Stack(
         children: <Widget>[
@@ -87,24 +82,32 @@ class _LoginScreenState extends State<LoginScreen> {
                   ButtonOrange(
                     titleButton: 'Sign in with Google',
                     onPressed: () async {
-                      await userBloc.signIn().then((UserCredential userC) => userBloc.updateUserData(UserModel(
-                        uid: userC.user.uid,
-                        name: userC.user.displayName,
-                        email: userC.user.email,
-                        photoURL: userC.user.photoURL,
-                      ))
-                      ).catchError((e) => print('El error al hacer Sign in with Google -> ${e.toString()}'));
                       print('se presionó -> Sign in with Google ');
+                      await userBloc.signIn().then((UserCredential userC) {
+                        userBloc.updateUserData(UserModel(
+                          uid: userC.user.uid,
+                          name: userC.user.displayName,
+                          email: userC.user.email,
+                          photoURL: userC.user.photoURL,
+                        ));
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (BuildContext context) => ButtonNavigationBarPrincipalMenu()));
+                      }
+                      ).catchError((e) => print('El error al hacer Sign in with Google -> ${e.toString()}'));
                     },
                     width: 230,
                     height: 70,
                   ),
-                  /*ButtonWhite(
+                  ButtonWhite(
                     titleButton:'Sign up',
-                    onPressed: (){print('se presionó -> Sign up ');},
+                    onPressed: (){
+                      print('se presionó -> Sign up ');
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) => LoginScreenWithEmailPassword()));
+                      },
                     width: 230,
                     height: 70,
-                  ),*/
+                  ),
                   Container(
                     padding: EdgeInsets.only(top: 90),
                     child: Text(
