@@ -2,7 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:manyas_v2/Post/model/post_model.dart';
 import 'package:manyas_v2/Post/ui/widgets/post_design.dart';
+import 'package:manyas_v2/Post/ui/widgets/post_friend_design.dart';
 import 'package:manyas_v2/User/model/user_model.dart';
+import 'package:manyas_v2/User/ui/widgets/search_people_widget.dart';
 
 class CloudFirestoreAPI {
   final String USERS = 'users';
@@ -67,6 +69,24 @@ class CloudFirestoreAPI {
     return profilePost;
   }
 
+  List<PostFriendDesign> buildMyFriendPosts(List<DocumentSnapshot> placesListSnapshot,
+      UserModel userModel) {
+    List<PostFriendDesign> profilePost = List<PostFriendDesign>();
+    placesListSnapshot.forEach((p) {
+      profilePost.add(PostFriendDesign(
+          PostModel(
+              location: p.data()['location'],
+              description: p.data()['description'],
+              V_I: p.data()['urlImage'],
+              likes: p.data()['likes'],
+              status: p.data()['status'],
+              dateTimeid: p.data()['dateTimeid']
+          ),
+          userModel));
+    });
+    return profilePost;
+  }
+
   Future<void> deletePost(PostModel postModel) async {
     String uid = await _auth.currentUser.uid;
     QuerySnapshot querySnapshot = await Firestore.instance.collection(POSTS)
@@ -96,5 +116,25 @@ class CloudFirestoreAPI {
         print('no se encontró el post que desea borrar');
       }
     }
+  }
+  
+  List<SearchPeopleWidget> filterAllUsers(List<DocumentSnapshot> peopleListSnapshot, String filterPerson)  {
+    List<SearchPeopleWidget> listPeopleWidget= List<SearchPeopleWidget>();
+    print('filterPerson: ${filterPerson} - peopleListSnapshot: ${peopleListSnapshot}');
+
+    peopleListSnapshot.where((value) =>
+        value['name'].toLowerCase().contains(filterPerson.toLowerCase()))
+        .forEach((p) {
+      listPeopleWidget.add(SearchPeopleWidget(
+        userModel: UserModel(
+            email: p.data()['email'],
+            followers: p.data()['followers'],
+            name: p.data()['name'],
+            photoURL: p.data()['photoURL'],
+            uid: p.data()['uid']
+        ),
+      ));
+    });
+    return listPeopleWidget;
   }
 }

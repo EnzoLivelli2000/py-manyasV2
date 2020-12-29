@@ -6,12 +6,12 @@ import 'package:manyas_v2/Post/model/post_model.dart';
 import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/model/user_model.dart';
 
-class PostDesign extends StatelessWidget {
+class PostFriendDesign extends StatelessWidget {
   PostModel postModel;
   UserBloc userBloc;
   UserModel userModel;
 
-  PostDesign(this.postModel, this.userModel);
+  PostFriendDesign(this.postModel, this.userModel);
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +56,7 @@ class PostDesign extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
-                  //userModel.name.length > 11? '${userModel.name.substring(0,15)} ...': userModel.name,
+                //userModel.name.length > 11? '${userModel.name.substring(0,15)} ...': userModel.name,
                   userModel.name,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
@@ -120,24 +120,6 @@ class PostDesign extends StatelessWidget {
       ),
     );
 
-    //enum SettingOptions{userBloc.deletePost(Po)}
-
-    final popUpMenuOption = Container(
-        margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 15, left: 15),
-        child: IconButton(
-          icon: Icon(Icons.clear,color: Color(0xFFFF0000),),
-          onPressed: () async {
-            print('se presionó: borrar post');
-            await userBloc
-                .deletePost(postModel)
-                .then((value) =>
-                    ('se borró de manera exitosa el post selecionado '))
-                .catchError((onError) {
-              print('Error al borrar el post ${onError}');
-            });
-          },
-        ));
-
     return Container(
       margin: EdgeInsets.only(top: 70.0, bottom: 10.0, right: 15, left: 15),
       decoration: BoxDecoration(
@@ -156,7 +138,7 @@ class PostDesign extends StatelessWidget {
         children: <Widget>[
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [userData, popUpMenuOption],
+            children: [userData],
           ),
           photoCard,
           contentPost,

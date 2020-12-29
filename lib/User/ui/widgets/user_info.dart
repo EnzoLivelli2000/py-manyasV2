@@ -31,7 +31,8 @@ class UserInfo extends StatelessWidget {
               padding: new EdgeInsets.only(right: 13.0),
               child: Expanded(
                 child: Text(
-                    userModel.name.length > 11? '${userModel.name.substring(0,15)} ...': userModel.name,
+                    //userModel.name.length > 11? '${userModel.name.substring(0,15)} ...': userModel.name,
+                    userModel.name,
                     maxLines: 1,
                     //softWrap: false,
                     overflow: TextOverflow.fade,

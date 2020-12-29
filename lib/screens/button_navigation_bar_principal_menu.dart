@@ -5,6 +5,7 @@ import 'package:manyas_v2/Party/ui/screens/prueba_party.dart';
 import 'package:manyas_v2/Post/ui/screens/home_posts.dart';
 import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/ui/screens/profile_screen.dart';
+import 'package:manyas_v2/User/ui/screens/search_people_screen.dart';
 
 class ButtonNavigationBarPrincipalMenu extends StatelessWidget {
   @override
@@ -43,7 +44,12 @@ class ButtonNavigationBarPrincipalMenu extends StatelessWidget {
               break;
             case 1:
               return CupertinoTabView(
-                builder: (BuildContext context) => PruebaParty(),
+                  builder: (BuildContext context){
+                    return BlocProvider<UserBloc>(
+                      creator:(_context, _bag) => UserBloc(),
+                      child: SearchPeopleScreen(),
+                    );
+                  }
               );
               break;
             case 2:

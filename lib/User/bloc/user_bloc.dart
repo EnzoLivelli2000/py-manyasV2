@@ -4,15 +4,17 @@ import 'dart:async';
 import 'package:bloc_provider/bloc_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:manyas_v2/Post/model/post_model.dart';
 import 'package:manyas_v2/Post/repository/firebase_storage_repository.dart';
 import 'package:manyas_v2/Post/ui/widgets/post_design.dart';
+import 'package:manyas_v2/Post/ui/widgets/post_friend_design.dart';
 import 'package:manyas_v2/User/model/user_model.dart';
 import 'package:manyas_v2/User/repository/auth_repository.dart';
 import 'package:manyas_v2/User/repository/cloud_firebase_api.dart';
 import 'package:manyas_v2/User/repository/cloud_firebase_repository.dart';
-import 'package:firebase_storage/firebase_storage.dart';
+import 'package:manyas_v2/User/ui/widgets/search_people_widget.dart';
+
 
 class UserBloc implements Bloc{
 
@@ -61,6 +63,19 @@ class UserBloc implements Bloc{
           .snapshots();
   //Case 7.1. Construcción de los Post
   List<PostDesign> buildMyPosts(List<DocumentSnapshot> placesListSnapshot, UserModel userModel) => _cloudFirestoreRepository.buildMyPosts(placesListSnapshot, userModel);
+
+  //Case 8. Filtrar a los usuarios
+  List<SearchPeopleWidget> filterAllUsers(List<DocumentSnapshot> peopleListSnapshot, String filterPerson) => _cloudFirestoreRepository.filterAllUsers(peopleListSnapshot, filterPerson);
+  //Case 8.1. Stream de mis usuarios
+  Stream<QuerySnapshot> myUsersListStream() {
+    return FirebaseFirestore.instance.collection(CloudFirestoreAPI().USERS).snapshots();
+  }
+  //Case 8.2 Hacer un get de myUserListStream()
+  Stream<QuerySnapshot> get peopleStream => myUsersListStream();
+
+  //Case 9 Mostrar los datos del usuario amigo(en esta función se elimina la opción de borrar post)
+  List<PostFriendDesign> buildMyFriendPosts(List<DocumentSnapshot> placesListSnapshot, UserModel userModel) => _cloudFirestoreRepository.buildMyFriendPosts(placesListSnapshot, userModel);
+
   @override
   void dispose() {
     // TODO: implement dispose

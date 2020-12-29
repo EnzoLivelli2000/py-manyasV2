@@ -4,6 +4,7 @@ import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/model/user_model.dart';
 import 'package:manyas_v2/User/ui/screens/profile_content.dart';
 import 'package:manyas_v2/User/ui/screens/profile_header.dart';
+import 'package:manyas_v2/User/ui/widgets/button_bar.dart';
 import 'package:manyas_v2/User/ui/widgets/choose_post.dart';
 import 'package:manyas_v2/widgets/background3.dart';
 
@@ -86,7 +87,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ListView(
           children: <Widget>[
             ProfileHeader(userModel: userAux, indexTap: indexTap),
-//        ChoosePost(userModel: userAux),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
