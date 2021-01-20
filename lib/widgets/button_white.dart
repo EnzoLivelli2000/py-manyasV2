@@ -11,7 +11,8 @@ class ButtonWhite extends StatefulWidget {
       @required this.titleButton,
       @required this.onPressed,
       this.width,
-      this.height});
+      this.height,
+      });
 
   @override
   _ButtonWhiteState createState() => _ButtonWhiteState();

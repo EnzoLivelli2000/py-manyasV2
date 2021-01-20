@@ -89,6 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           name: userC.user.displayName,
                           email: userC.user.email,
                           photoURL: userC.user.photoURL,
+                          followers: 0
                         ));
                         Navigator.push(context,
                             MaterialPageRoute(builder: (BuildContext context) => ButtonNavigationBarPrincipalMenu()));

@@ -19,8 +19,7 @@ class _SearchPersonState extends State<SearchPerson> {
   @override
   Widget build(BuildContext context) {
     userBloc = BlocProvider.of<UserBloc>(context);
-    return
-      StreamBuilder(
+    return StreamBuilder(
         stream: userBloc.peopleStream,
         builder: (context, AsyncSnapshot snapshot) {
           switch (snapshot.connectionState) {

@@ -2,10 +2,11 @@ import 'package:bloc_provider/bloc_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:manyas_v2/Party/ui/screens/prueba_party.dart';
-import 'package:manyas_v2/Post/ui/screens/home_posts.dart';
+import 'file:///C:/Users/Lenovo/AndroidStudioProjects/TutorialesYouTube/manyas_v2/lib/screens/home_posts.dart';
 import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/ui/screens/profile_screen.dart';
 import 'package:manyas_v2/User/ui/screens/search_people_screen.dart';
+import 'package:manyas_v2/screens/home_screen.dart';
 
 class ButtonNavigationBarPrincipalMenu extends StatelessWidget {
   @override
@@ -37,7 +38,7 @@ class ButtonNavigationBarPrincipalMenu extends StatelessWidget {
                   builder: (BuildContext context){
                     return BlocProvider<UserBloc>(
                       creator:(_context, _bag) => UserBloc(),
-                      child: HomePost(),
+                      child: HomeScreen(),
                     );
                   }
               );

@@ -1,5 +1,6 @@
 import 'package:bloc_provider/bloc_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:manyas_v2/Post/model/post_model.dart';
@@ -48,6 +49,7 @@ class PostFriendDesign extends StatelessWidget {
                 shape: BoxShape.rectangle,
                 image: DecorationImage(
                   fit: BoxFit.cover,
+                  //image: AssetImage('https://firebasestorage.googleapis.com/v0/b/crud-flutter-6c754.appspot.com/o/zXeoV02LgKgWdxFNs1Za6HSbkb72%2F2020-12-18%2018%3A40%3A09.111297.jpg?alt=media&token=92ab258d-6e45-46ca-a6bb-7b424a84e8c6'),
                   image: NetworkImage(userModel.photoURL),
                   //image: AssetImage('assets/images/post_photo.PNG')
                 )),

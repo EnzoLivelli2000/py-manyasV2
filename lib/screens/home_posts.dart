@@ -4,20 +4,24 @@ import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/model/user_model.dart';
 import 'package:manyas_v2/User/ui/screens/profile_friend_content.dart';
 import 'package:manyas_v2/User/ui/widgets/user_info.dart';
+import 'package:manyas_v2/screens/home_content.dart';
+import 'package:manyas_v2/screens/home_content_prueba.dart';
 import 'package:manyas_v2/widgets/background3.dart';
 import 'package:manyas_v2/widgets/button_x.dart';
 import 'package:manyas_v2/widgets/button_white.dart';
 
-class ProfileFriendScreen extends StatefulWidget {
+//CAPAZ ESTO LO VAYA A BORRAR
+
+class HomePosts extends StatefulWidget {
   UserModel userModel;
 
-  ProfileFriendScreen({Key key, @required this.userModel});
+  HomePosts({Key key, @required this.userModel});
 
   @override
-  _ProfileFriendScreenState createState() => _ProfileFriendScreenState();
+  _HomePostsState createState() => _HomePostsState();
 }
 
-class _ProfileFriendScreenState extends State<ProfileFriendScreen> {
+class _HomePostsState extends State<HomePosts> {
   int indexTap = 0;
   UserBloc userBloc;
 
@@ -31,18 +35,18 @@ class _ProfileFriendScreenState extends State<ProfileFriendScreen> {
   Widget build(BuildContext context) {
     userBloc = BlocProvider.of<UserBloc>(context);
     return Stack(children: <Widget>[
-      Background3(),
+      //Background3(),
       ListView(
         children: <Widget>[
-          showProfileHeader(widget.userModel, indexTap),
+          //showProfileHeader(widget.userModel, indexTap),
 //        ChoosePost(userModel: userAux),
-          Row(
+          /*Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               followButton(widget.userModel),
               messageButton(widget.userModel),
             ],
-          ),
+          ),*/
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -50,7 +54,7 @@ class _ProfileFriendScreenState extends State<ProfileFriendScreen> {
                 child: GestureDetector(
                   onTap: () {
                     onTapTapped(0);
-                    print('se solicita visualizar un post');
+                    print('se solicita visualizar los post de mis amigos');
                   },
                   child: Text(
                     'Post',
@@ -69,7 +73,7 @@ class _ProfileFriendScreenState extends State<ProfileFriendScreen> {
                 child: GestureDetector(
                   onTap: () {
                     onTapTapped(1);
-                    print('se solicita visualizar un Event');
+                    print('se solicita visualizar los Storie´s de mis amigos');
                   },
                   child: Text(
                     'Storie',
@@ -89,7 +93,7 @@ class _ProfileFriendScreenState extends State<ProfileFriendScreen> {
                 child: GestureDetector(
                     onTap: () {
                       onTapTapped(2);
-                      print('se solicita visualizar las Stories');
+                      print('se solicita visualizar las Event de mis amigos');
                     },
                     child: Text('Event',
                         style: TextStyle(
@@ -102,7 +106,7 @@ class _ProfileFriendScreenState extends State<ProfileFriendScreen> {
               ),
             ],
           ),
-          ProfileFriendContent(widget.userModel, indexTap),
+          HomeContent(widget.userModel, indexTap),
         ],
       )
     ]);

@@ -79,7 +79,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         name: snapshot.data.displayName,
         email: snapshot.data.email,
         photoURL: snapshot.data.photoUrl,
-        followers: 654,
+       // followers: snapshot.data.followers,
       );
 
       return Stack(children: <Widget>[
@@ -94,7 +94,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: GestureDetector(
                     onTap: () {
                       onTapTapped(0);
-                      print('se solicita crear un post');
+                      print('se solicita mostrar los post´s');
                     },
                     child: Text(
                       'Post',
@@ -113,7 +113,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: GestureDetector(
                     onTap: () {
                       onTapTapped(1);
-                      print('se solicita crear un Event');
+                      print('se solicita mostrar los Stories');
                     },
                     child: Text(
                       'Storie',
@@ -133,7 +133,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: GestureDetector(
                       onTap: () {
                         onTapTapped(2);
-                        print('se solicita crear un Stories');
+                        print('se solicita mostrar las Event´s');
                       },
                       child: Text('Event',
                           style: TextStyle(

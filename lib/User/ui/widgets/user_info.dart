@@ -1,12 +1,18 @@
+import 'package:bloc_provider/bloc_provider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/model/user_model.dart';
 
 class UserInfo extends StatelessWidget {
   UserModel userModel;
+  UserBloc userBloc;
+  int followLength;
   UserInfo({Key key, this.userModel});
   @override
   Widget build(BuildContext context) {
+    userBloc = BlocProvider.of(context);
+    followLength = userBloc.lengthFollowersList(userModel);
     final userPhoto = Container(
       width: 90.0,
       height: 90.0,
@@ -29,7 +35,7 @@ class UserInfo extends StatelessWidget {
                   bottom: 5.0
               ),*/
               padding: new EdgeInsets.only(right: 13.0),
-              child: Expanded(
+             // child: Expanded(
                 child: Text(
                     //userModel.name.length > 11? '${userModel.name.substring(0,15)} ...': userModel.name,
                     userModel.name,
@@ -44,7 +50,7 @@ class UserInfo extends StatelessWidget {
                       decoration: TextDecoration.none,
                     )
                 ),
-              )
+              //)
           ),
         Text(
             userModel.email,
@@ -60,7 +66,7 @@ class UserInfo extends StatelessWidget {
           child: Row(
             children: <Widget>[
               Text(
-                  '${userModel.followers.toString()} Friends',
+                  '${followLength} Followers',
                   style: TextStyle(
                     fontSize: 15.0,
                     fontWeight: FontWeight.bold,

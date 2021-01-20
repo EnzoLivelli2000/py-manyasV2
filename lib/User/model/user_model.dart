@@ -10,6 +10,6 @@ class UserModel {
     this.name,
     this.photoURL,
     this.email,
-    this.followers,
+   this.followers,
   });
 }
