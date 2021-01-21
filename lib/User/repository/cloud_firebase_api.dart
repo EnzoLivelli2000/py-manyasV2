@@ -124,8 +124,7 @@ class CloudFirestoreAPI {
   List<SearchPeopleWidget> filterAllUsers(
       List<DocumentSnapshot> peopleListSnapshot, String filterPerson) {
     List<SearchPeopleWidget> listPeopleWidget = List<SearchPeopleWidget>();
-    print(
-        'filterPerson: ${filterPerson} - peopleListSnapshot: ${peopleListSnapshot}');
+    print('filterPerson: ${filterPerson} - peopleListSnapshot: ${peopleListSnapshot}');
 
     peopleListSnapshot
         .where((value) =>
@@ -140,6 +139,7 @@ class CloudFirestoreAPI {
             uid: p.data()['uid']),
       ));
     });
+    print('${listPeopleWidget.length}');
     return listPeopleWidget;
   }
 

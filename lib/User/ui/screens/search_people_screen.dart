@@ -19,30 +19,34 @@ class _SearchPeopleScreenState extends State<SearchPeopleScreen> {
   Widget build(BuildContext context) {
     userBloc = BlocProvider.of<UserBloc>(context);
     return Scaffold(
-      appBar: AppBar(
-        title: Container(
-          margin: EdgeInsets.only(top: 24.0),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(100.0),
+        child: Container(
+          margin: EdgeInsets.only(top: 25.0, right: 10, left: 10),
           child: TextField(
             controller: _controllerFilterPeople,
+            style: TextStyle(color: Colors.white),
+            textInputAction: TextInputAction.search,
             decoration: InputDecoration(
-                fillColor: Color(0xFFD0D0D0),
+                fillColor: Color(0xFFFF8E4A) ,
                 border: InputBorder.none,
                 filled: true,
                 hintText: "Search ...",
                 hintStyle: TextStyle(color: Colors.white),
                 enabledBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFFe5e5e5)),
+                  borderSide: BorderSide(color: Color(0xFFFF8E4A)),
                   borderRadius: BorderRadius.all(Radius.circular(9)),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: BorderSide(color: Color(0xFFe5e5e5)),
+                  borderSide: BorderSide(color: Color(0xFFFF8E4A) ),
                   borderRadius: BorderRadius.all(Radius.circular(9)),
                 ),
-                suffixIcon: Icon(Icons.search)),
+                suffixIcon: Icon(Icons.search,color:Colors.white,)
+            ),
           ),
         ),
+          //Color(0xFFe5e5e5) es un color gris q me gusta
       ),
-      //backgroundColor: Color(0xFFFF8E4A),
       body: Stack(
         children: <Widget>[
           StreamBuilder(

@@ -28,7 +28,6 @@ class _SearchPersonState extends State<SearchPerson> {
             case ConnectionState.none:
               return Center(child: CircularProgressIndicator());
             case ConnectionState.active:
-            //print("-> ${snapshot.data.documents}");
               return ListView(
                 children: userBloc.filterAllUsers(snapshot.data.documents, widget.controllerFilterProduct),
               );
