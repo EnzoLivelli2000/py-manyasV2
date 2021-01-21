@@ -139,7 +139,7 @@ class PostDesign extends StatelessWidget {
         ));
 
     return Container(
-      margin: EdgeInsets.only(top: 70.0, bottom: 10.0, right: 15, left: 15),
+      margin: EdgeInsets.only(top: 30.0, bottom: 10.0, right: 15, left: 15),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(15),
         color: Colors.white,

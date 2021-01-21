@@ -71,6 +71,9 @@ class HomeContent extends StatelessWidget {
           case ConnectionState.done:
             print('snapshot -> ${snapshot}');
             return ListView.builder(
+              //scrollDirection: Axis.vertical,
+              physics: ScrollPhysics(),
+              shrinkWrap: true,
               itemCount: posts.length,
               itemBuilder: (_, i){
                 return FutureBuilder<List<PostFriendDesign>>(
@@ -173,65 +176,6 @@ class HomeContent extends StatelessWidget {
     );
   }
 
-  Widget PostContent() {
-    return StreamBuilder<List<DocumentSnapshot>>(
-      stream: FirebaseFirestore.instance.collection('users').document(userModel.uid).snapshots().asyncMap((snap) async {
-        List<String> groceryListsArr = snap.data()['myFriends'];
-        var groceryList = <DocumentSnapshot>[];
-        for (var groceryPath in groceryListsArr) {
-          groceryList.add(await FirebaseFirestore.instance.document(groceryPath).get());
-        }
-        print('groceryList ----------> ${groceryList}');
-        return groceryList;
-      }),
-      builder: (context, AsyncSnapshot<List<DocumentSnapshot>> snapshot) {
-        switch (snapshot.connectionState) {
-          case ConnectionState.waiting:
-            return Container(
-              margin: EdgeInsets.only(top: 120),
-              alignment: Alignment.center,
-              child: Text(
-                'Loading ...',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 25.0,
-                  fontFamily: 'Lato',
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            );
-          case ConnectionState.none:
-            return Container(
-              margin: EdgeInsets.only(top: 120),
-              alignment: Alignment.center,
-              child: Text(
-                'Loading ...',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 25.0,
-                  fontFamily: 'Lato',
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            );
-          case ConnectionState.done:
-           /* return Column(
-              children: userBloc.buildPostsEE(snapshot.data,userModel)
-            );*/
-            //return listViewPosts(userBloc.buildMyFriendPosts2(snapshot.data.documents, userModel), userModel);
-            break;
-          case ConnectionState.active:
-            /*return Column(
-                children: userBloc.buildPostsEE(snapshot.data,userModel)
-            );*/
-            //return listViewPosts(userBloc.buildMyFriendPosts2(snapshot.data.documents, userModel), userModel);
-            break;
-          default:
-            return CircularProgressIndicator();
-        }
-      },
-    );
-  }
 
   Widget listViewPosts(List<PostModel> posts, UserModel usermodel){
 

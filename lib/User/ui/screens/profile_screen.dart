@@ -91,6 +91,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
                 Container(
+                  margin: EdgeInsets.only(bottom: 40),
                   child: GestureDetector(
                     onTap: () {
                       onTapTapped(0);
@@ -109,7 +110,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(right: 35, left: 40),
+                  margin: EdgeInsets.only(right: 35, left: 40, bottom: 40),
                   child: GestureDetector(
                     onTap: () {
                       onTapTapped(1);
@@ -129,7 +130,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 ),
                 Container(
-                  //margin: EdgeInsets.only(right: 25, left: 25),
+                  margin: EdgeInsets.only(bottom: 40),
                   child: GestureDetector(
                       onTap: () {
                         onTapTapped(2);

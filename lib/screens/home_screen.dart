@@ -6,8 +6,10 @@ import 'package:manyas_v2/Party/ui/widgets/storie_widget.dart';
 import 'package:manyas_v2/Storie/ui/screens/prueba_storie.dart';
 import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/model/user_model.dart';
+import 'package:manyas_v2/User/ui/screens/profile_header.dart';
 import 'package:manyas_v2/screens/home_content.dart';
 import 'package:manyas_v2/screens/home_posts.dart';
+import 'package:manyas_v2/widgets/background3.dart';
 
 class HomeScreen extends StatefulWidget {
   @override
@@ -85,78 +87,73 @@ class _HomeScreenState extends State<HomeScreen> {
         // followers: snapshot.data.followers,
       );
 
-      /*return Stack(
-        children: [
-          Container(
-            margin: EdgeInsets.only(top: 30),
-            child: HomeContent(userModel: userAux),
-          )
-        ],
-      );*/
       return Stack(children: <Widget>[
-        //Background3(),
-        // ProfileHeader(userModel: userAux, indexTap: indexTap),
-        StorieWidget(userAux),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+        ListView(
           children: <Widget>[
-            Container(
-              child: GestureDetector(
-                onTap: () {
-                  onTapTapped(0);
-                  print('se solicita crear un post');
-                },
-                child: Text(
-                  'Post',
-                  style: TextStyle(
-                    fontSize: 19.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontFamily: 'Lato',
-                    decoration: TextDecoration.none,
-                  ),
-                ),
-              ),
-            ),
-            Container(
-              margin: EdgeInsets.only(right: 35, left: 40),
-              child: GestureDetector(
-                onTap: () {
-                  onTapTapped(1);
-                  print('se solicita crear un Stories');
-                },
-                child: Text(
-                  'Storie',
-                  style: TextStyle(
-                    fontSize: 19.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontFamily: 'Lato',
-                    decoration: TextDecoration.none,
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-              ),
-            ),
-            Container(
-              //margin: EdgeInsets.only(right: 25, left: 25),
-              child: GestureDetector(
-                  onTap: () {
-                    onTapTapped(2);
-                    print('se solicita crear un Event´s');
-                  },
-                  child: Text('Event',
+            StorieWidget(userModel: userAux, indexTap: indexTap),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Container(
+                  margin: EdgeInsets.only(bottom: 30),
+                  child: GestureDetector(
+                    onTap: () {
+                      onTapTapped(0);
+                      print('se solicita crear un post');
+                    },
+                    child: Text(
+                      'Post',
                       style: TextStyle(
                         fontSize: 19.0,
                         fontWeight: FontWeight.bold,
                         color: Colors.black,
                         fontFamily: 'Lato',
                         decoration: TextDecoration.none,
-                      ))),
+                      ),
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(right: 35, left: 40, bottom: 30),
+                  child: GestureDetector(
+                    onTap: () {
+                      onTapTapped(1);
+                      print('se solicita crear un Stories');
+                    },
+                    child: Text(
+                      'Storie',
+                      style: TextStyle(
+                        fontSize: 19.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontFamily: 'Lato',
+                        decoration: TextDecoration.none,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                  ),
+                ),
+                Container(
+                  margin: EdgeInsets.only(bottom: 30),
+                  child: GestureDetector(
+                      onTap: () {
+                        onTapTapped(2);
+                        print('se solicita crear un Event´s');
+                      },
+                      child: Text('Event',
+                          style: TextStyle(
+                            fontSize: 19.0,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            fontFamily: 'Lato',
+                            decoration: TextDecoration.none,
+                          ))),
+                ),
+              ],
             ),
+            HomeContent(userAux, indexTap),
           ],
-        ),
-        HomeContent(userAux, indexTap),
+        )
       ]);
     }
   }
