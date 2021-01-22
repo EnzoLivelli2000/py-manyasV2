@@ -182,7 +182,7 @@ class _ProfileFriendScreenState extends State<ProfileFriendScreen> {
                 icon: Icon(
                   Icons.keyboard_arrow_left,
                   color: Colors.orange,
-                  size: 45,
+                  size: 35,
                 ),
                 onPressed: () {
                   Navigator.of(context).pop();

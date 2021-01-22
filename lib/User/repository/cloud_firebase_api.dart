@@ -139,7 +139,6 @@ class CloudFirestoreAPI {
             uid: p.data()['uid']),
       ));
     });
-    print('${listPeopleWidget.length}');
     return listPeopleWidget;
   }
 
@@ -171,13 +170,9 @@ class CloudFirestoreAPI {
     DocumentReference refFriend = _db.collection(USERS).doc(model.uid);
     await refFriend.get().then((datasnapshot) {
       if (datasnapshot.exists) {
-        //aux = datasnapshot.data()['myFollowers'];
         refFriend.updateData({
           'lengthFollowers': datasnapshot.data()['lengthFollowers'] - 1,
         });
-        //print('model.name: ${model.name}');
-        //print('aux.length: ${aux.length}');
-        //return aux.length;
       } else {
         print('ERROR: ${datasnapshot} no existe');
       }
@@ -288,7 +283,47 @@ class CloudFirestoreAPI {
             email: ds.data()['email'],
           )));
     });
+
+
+    profilePost.sort((a,b) => b.postModel.dateTimeid.compareTo(a.postModel.dateTimeid));
+
+    print(' comprobar si hay más de un elemento en listPeolpleWidget : ${profilePost.length}');
       return profilePost;
+  }
+
+  Future<List<PostFriendDesign>> buildPosts2(List<DocumentReference> myfriendsList, UserModel userModel) async {
+
+    List<PostFriendDesign> profilePost = List<PostFriendDesign>();
+
+    for(int i = 0; i < myfriendsList.length; i++){
+      print('myfriendsList.length : ${myfriendsList.length}');
+      print('ID myfriendsList : ${myfriendsList[i].id}');
+      DocumentReference refUser = _db.collection(USERS).doc(myfriendsList[i].id);
+      DocumentSnapshot ds = await refUser.get();
+
+      QuerySnapshot qs = await _db.collection(POSTS).where("userOwner", isEqualTo: Firestore.instance.document("${CloudFirestoreAPI().USERS}/${myfriendsList[i].id}")).get();
+
+      qs.docs.forEach((post) {
+        print('${post.data()['description']}');
+        profilePost.add(PostFriendDesign(
+            PostModel(
+                location: post.data()['location'],
+                description: post.data()['description'],
+                V_I: post.data()['urlImage'],
+                likes: post.data()['likes'],
+                status: post.data()['status'],
+                dateTimeid: post.data()['dateTimeid']
+            ),
+            UserModel(
+              photoURL: ds.data()['photoURL'],
+              name: ds.data()['name'],
+              email: ds.data()['email'],
+            )));
+      });
+    }
+
+    profilePost.sort((a,b) => b.postModel.dateTimeid.compareTo(a.postModel.dateTimeid));
+    return profilePost;
   }
 
 }

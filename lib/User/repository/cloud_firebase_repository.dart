@@ -32,4 +32,6 @@ class CloudFirestoreRepository {
 
   Future<List<PostFriendDesign>> buildPosts(DocumentReference userSnapshot, UserModel userModel) => _cloudFirestoreAPI.buildPosts(userSnapshot, userModel);
 
+  Future<List<PostFriendDesign>> buildPosts2(List<DocumentReference> userSnapshot, UserModel userModel) => _cloudFirestoreAPI.buildPosts2(userSnapshot, userModel);
+
 }

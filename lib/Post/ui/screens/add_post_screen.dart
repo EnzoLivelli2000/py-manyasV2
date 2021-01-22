@@ -31,118 +31,127 @@ class _AddPostScreenState extends State<AddPostScreen> {
   Widget build(BuildContext context) {
     UserBloc userBloc = BlocProvider.of<UserBloc>(context);
 
-    return Scaffold(
-      body: Stack(
-        children: <Widget>[
-          Background1(),
-          Row(
-            children: <Widget>[
-              Container(
-                padding: EdgeInsets.only(top: 25, left: 5),
-                child: SizedBox(
-                  height: 45.0,
-                  width: 45.0,
-                  child: IconButton(
-                    icon: Icon(
-                      Icons.keyboard_arrow_left,
-                      color: Colors.white,
-                      size: 45,
+    if(widget.image.path == null){
+      print('Entro a widget.image.path == null');
+      Navigator.of(context).pop();
+    }else{
+      return Scaffold(
+        body: Stack(
+          children: <Widget>[
+            Background1(),
+            Container(
+              margin: EdgeInsets.only(bottom: 20),
+               child: Row(
+                 children: <Widget>[
+                   Container(
+                     padding: EdgeInsets.only(top: 25, left: 5),
+                     child: SizedBox(
+                       height: 45.0,
+                       width: 45.0,
+                       child: IconButton(
+                         icon: Icon(
+                           Icons.keyboard_arrow_left,
+                           color: Colors.white,
+                           size: 45,
+                         ),
+                         onPressed: () {
+                           Navigator.of(context).pop();
+                         },
+                       ),
+                     ),
+                   ),
+                   Flexible(
+                       child: Container(
+                         padding: EdgeInsets.only(top: 35, left: 20, right: 10),
+                         child: TitleHeader(
+                           title: 'Add a new Post',
+                         ),
+                       )),
+                 ],
+               ),
+            ),
+            Container(
+              margin: EdgeInsets.only(top: 60),
+              child: ListView(
+                children: <Widget>[
+                  Container(
+                    margin: EdgeInsets.only(top: 30.0, bottom: 10.0, right: 17, left: 17),
+                    alignment: Alignment.center,
+                    child: CardImageWithFabIcon(
+                      pathImage: widget.image.path,
+                      iconData: Icons.camera_alt,
+                      width: 380.0,
+                      height: 250.0,
+                      left: 0,
+                      internet: false,
                     ),
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
                   ),
-                ),
-              ),
-              Flexible(
-                  child: Container(
-                padding: EdgeInsets.only(top: 35, left: 20, right: 10),
-                child: TitleHeader(
-                  title: 'Add a new Post',
-                ),
-              )),
-            ],
-          ),
-          Container(
-            margin: EdgeInsets.only(top: 60, bottom: 20),
-            child: ListView(
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.only(top: 30.0, bottom: 10.0, right: 17, left: 17),
-                  alignment: Alignment.center,
-                  child: CardImageWithFabIcon(
-                    pathImage: widget.image.path,
-                    iconData: Icons.camera_alt,
-                    width: 380.0,
-                    height: 250.0,
-                    left: 0,
-                    internet: false,
+                  Container(
+                      margin: EdgeInsets.only(top: 30.0, bottom: 10.0),
+                      child: TextInput(
+                        hintText: 'Description',
+                        inputType: TextInputType.multiline,
+                        maxLines: 6,
+                        controller: _controllerDescriptionPost,
+                      )),
+                  Container(
+                    margin: EdgeInsets.only(top: 10.0),
+                    child: TextInputLocation(
+                      hintText: 'Add your location',
+                      iconData: Icons.location_on,
+                      controller: _controllerLocationPost,
+                    ),
                   ),
-                ),
-                Container(
-                    margin: EdgeInsets.only(top: 30.0, bottom: 10.0),
-                    child: TextInput(
-                      hintText: 'Description',
-                      inputType: TextInputType.multiline,
-                      maxLines: 6,
-                      controller: _controllerDescriptionPost,
-                    )),
-                Container(
-                  margin: EdgeInsets.only(top: 10.0),
-                  child: TextInputLocation(
-                    hintText: 'Add your location',
-                    iconData: Icons.location_on,
-                    controller: _controllerLocationPost,
-                  ),
-                ),
-                Container(
-                  child: ButtonOrange(
-                    titleButton: 'Add Post',
-                    onPressed: () {
-                      String uid;
-                      String path;
-                      userBloc.currentUser().then((User user) => {
-                            if (user != null)
-                              {
-                                uid = user.uid,
-                                path = "${uid}/${DateTime.now().toString()}.jpg",
-                                //1. Firebase Storage
-                                userBloc.uploadFile(path, widget.image).then((StorageUploadTask storageUploadTask){
+                  Container(
+                    child: ButtonOrange(
+                      titleButton: 'Add Post',
+                      onPressed: () {
+                        String uid;
+                        String path;
+                        userBloc.currentUser().then((User user) => {
+                          if (user != null)
+                            {
+                              uid = user.uid,
+                              path = "${uid}/${DateTime.now().toString()}.jpg",
+                              //1. Firebase Storage
+                              userBloc.uploadFile(path, widget.image).then((StorageUploadTask storageUploadTask){
+                                Text('Cargando Imagen');
                                 storageUploadTask.onComplete.then((StorageTaskSnapshot snapshot){
                                   snapshot.ref.getDownloadURL().then((urlImage){
                                     print('URL_IMAGE: ${urlImage}');
 
-                                  //2. Cloud Firestore
-                                  userBloc.updatePostData(PostModel(
-                                    description: _controllerDescriptionPost.text,
-                                    location: _controllerLocationPost.text,
-                                    V_I : urlImage,
-                                    likes: 0,
-                                    status: true,
-                                    dateTimeid: DateTime.now().toString(),
-                                  )).whenComplete(() {
-                                    print('Proceso terminado');
-                                    Navigator.pop(context);
+                                    //2. Cloud Firestore
+                                    userBloc.updatePostData(PostModel(
+                                      description: _controllerDescriptionPost.text,
+                                      location: _controllerLocationPost.text,
+                                      V_I : urlImage,
+                                      likes: 0,
+                                      status: true,
+                                      dateTimeid: DateTime.now().toString(),
+                                    )).whenComplete(() {
+                                      print('Proceso terminado');
+                                      Navigator.pop(context);
+                                    });
+
                                   });
-
                                 });
-                            });
-                          })
-                              }
-                          });
+                              })
+                            }
+                        });
 
-                      print('se presionó -> Subir post ');
-                    },
-                    width: 230,
-                    height: 70,
-                  ),
-                )
-              ],
+                        print('se presionó -> Subir post ');
+                      },
+                      width: 230,
+                      height: 70,
+                    ),
+                  )
+                ],
+              ),
             ),
-          ),
-          //addPost(context,_controllerDescriptionPost),
-        ],
-      ),
-    );
+            //addPost(context,_controllerDescriptionPost),
+          ],
+        ),
+      );
+    }
   }
 }

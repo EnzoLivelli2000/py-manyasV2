@@ -36,7 +36,7 @@ class HomeContent extends StatelessWidget {
 
   Widget PostContentAux() {
     return StreamBuilder(
-      stream: userBloc.myFriendsListStream1,
+      stream: userBloc.myFriendsListStream,
       builder: (context, AsyncSnapshot<List<DocumentReference>> snapshot) {
         final posts = snapshot.data ?? [];
         switch (snapshot.connectionState) {
@@ -74,10 +74,10 @@ class HomeContent extends StatelessWidget {
               //scrollDirection: Axis.vertical,
               physics: ScrollPhysics(),
               shrinkWrap: true,
-              itemCount: posts.length,
+              itemCount: 1,
               itemBuilder: (_, i){
                 return FutureBuilder<List<PostFriendDesign>>(
-                  future: userBloc.buildPosts(posts[i], userModel), // function where you call your api
+                  future: userBloc.buildPosts2(posts, userModel), // function where you call your api
                   builder: (BuildContext context, AsyncSnapshot<List<PostFriendDesign>> snapshot) {  // AsyncSnapshot<Your object type>
                     if( snapshot.connectionState == ConnectionState.waiting){
                       return Container(
@@ -126,7 +126,7 @@ class HomeContent extends StatelessWidget {
               itemCount: posts.length,
               itemBuilder: (_, i){
                 return FutureBuilder<List<PostFriendDesign>>(
-                  future: userBloc.buildPosts(posts[i], userModel), // function where you call your api
+                  future: userBloc.buildPosts2(posts, userModel), // function where you call your api
                   builder: (BuildContext context, AsyncSnapshot<List<PostFriendDesign>> snapshot) {  // AsyncSnapshot<Your object type>
                     if( snapshot.connectionState == ConnectionState.waiting){
                       return Container(
@@ -159,7 +159,7 @@ class HomeContent extends StatelessWidget {
                         );
                       else {
                         return Column(
-                          children: snapshot.data,
+                          children: snapshot.data.toList(),
                         );
                       }
                       return Center(child: new Text('${snapshot.data}'));  // snapshot.data  :- get your object which is pass from your downloadData() function

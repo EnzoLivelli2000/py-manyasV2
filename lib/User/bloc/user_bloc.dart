@@ -121,15 +121,7 @@ class UserBloc implements Bloc {
 
   Stream<QuerySnapshot> get postsStream => postsListStream();
 
-  Stream<DocumentSnapshot> myFriendsListStream(String uid) async* {
-    DocumentReference userRef =
-    FirebaseFirestore.instance.collection('users').doc(uid);
-     await userRef.get().then((value) {
-       return Firestore.instance.document(value.data()['myFriends']).snapshots();
-    });
-  }
-
-  Stream <List<DocumentReference>> get myFriendsListStream1 async* {
+  Stream <List<DocumentReference>> get myFriendsListStream async* {
     DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid);
 
     final List<DocumentReference> posts = [];
@@ -140,6 +132,7 @@ class UserBloc implements Bloc {
        posts.add(aux[i]);
 
        yield posts;
+
     }
   }
 
@@ -148,6 +141,10 @@ class UserBloc implements Bloc {
   Future<List<PostFriendDesign>> buildPosts(
       DocumentReference userSnapshot, UserModel userModel) =>
       _cloudFirestoreRepository.buildPosts(userSnapshot, userModel);
+
+  Future<List<PostFriendDesign>> buildPosts2(
+      List<DocumentReference> userSnapshot, UserModel userModel) =>
+      _cloudFirestoreRepository.buildPosts2(userSnapshot, userModel);
 
   @override
   void dispose() {

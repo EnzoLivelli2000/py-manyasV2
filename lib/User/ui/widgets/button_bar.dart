@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:manyas_v2/Post/ui/screens/add_post_screen.dart';
 import 'package:manyas_v2/User/bloc/user_bloc.dart';
+import 'package:manyas_v2/User/ui/screens/profile_screen.dart';
 import 'package:manyas_v2/User/ui/widgets/circle_button.dart';
 
 class ButtonsBar extends StatelessWidget {
@@ -37,9 +38,19 @@ class ButtonsBar extends StatelessWidget {
               switch (indexTap) {
                 case 0:
                   ImagePicker.pickImage(source: ImageSource.camera).then((File image){
-                    Navigator.push(context,
-                        MaterialPageRoute(builder: (BuildContext context) => AddPostScreen(image: image)));
-                  }).catchError((onError) => print(onError));
+                    if(image == null){
+                      print('entroooooooooooooooooooooooooooooooooooooooooooo');
+                      //Navigator.of(context).pop();
+                      return BlocProvider<UserBloc>(
+                        creator:(_context, _bag) =>UserBloc(),
+                        child: ProfileScreen(),
+                      );
+                      //Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) =>ProfileScreen()));
+                    }else{
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) => AddPostScreen(image: image)));
+                    }
+                  }).catchError((onError) => Navigator.of(context).pop());
                   break;
               }
               /*ImagePicker.pickImage(source: ImageSource.camera).then((File image){
