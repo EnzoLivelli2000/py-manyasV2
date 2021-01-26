@@ -22,8 +22,7 @@ class HomeContent extends StatelessWidget {
     userBloc = BlocProvider.of<UserBloc>(context);
     switch (index) {
       case 0:
-        return PostContentAux();
-        //PostDesign(postModel2, userModel);
+        return PostContent();
         break;
       case 1:
         return PruebaStorie();
@@ -34,7 +33,7 @@ class HomeContent extends StatelessWidget {
     }
   }
 
-  Widget PostContentAux() {
+  Widget PostContent() {
     return StreamBuilder(
       stream: userBloc.myFriendsListStream,
       builder: (context, AsyncSnapshot<List<DocumentReference>> snapshot) {
@@ -71,20 +70,19 @@ class HomeContent extends StatelessWidget {
           case ConnectionState.done:
             print('snapshot -> ${snapshot}');
             return ListView.builder(
-              //scrollDirection: Axis.vertical,
               physics: ScrollPhysics(),
               shrinkWrap: true,
               itemCount: 1,
               itemBuilder: (_, i){
                 return FutureBuilder<List<PostFriendDesign>>(
-                  future: userBloc.buildPosts2(posts, userModel), // function where you call your api
+                  future: userBloc.buildPosts(posts, userModel), // function where you call your api
                   builder: (BuildContext context, AsyncSnapshot<List<PostFriendDesign>> snapshot) {  // AsyncSnapshot<Your object type>
                     if( snapshot.connectionState == ConnectionState.waiting){
                       return Container(
                         margin: EdgeInsets.only(top: 120),
                         alignment: Alignment.center,
                         child: Text(
-                          '',
+                          'Just a minute please!',
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 25.0,
@@ -99,7 +97,7 @@ class HomeContent extends StatelessWidget {
                           margin: EdgeInsets.only(top: 120),
                           alignment: Alignment.center,
                           child: Text(
-                            '',
+                            'Just a minute please!',
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 25.0,
@@ -113,7 +111,6 @@ class HomeContent extends StatelessWidget {
                           children: snapshot.data,
                         );
                       }
-                        return Center(child: new Text('${snapshot.data}'));  // snapshot.data  :- get your object which is pass from your downloadData() function
                     }
                   },
                 );
@@ -126,7 +123,7 @@ class HomeContent extends StatelessWidget {
               itemCount: posts.length,
               itemBuilder: (_, i){
                 return FutureBuilder<List<PostFriendDesign>>(
-                  future: userBloc.buildPosts2(posts, userModel), // function where you call your api
+                  future: userBloc.buildPosts(posts, userModel), // function where you call your api
                   builder: (BuildContext context, AsyncSnapshot<List<PostFriendDesign>> snapshot) {  // AsyncSnapshot<Your object type>
                     if( snapshot.connectionState == ConnectionState.waiting){
                       return Container(
@@ -162,7 +159,6 @@ class HomeContent extends StatelessWidget {
                           children: snapshot.data.toList(),
                         );
                       }
-                      return Center(child: new Text('${snapshot.data}'));  // snapshot.data  :- get your object which is pass from your downloadData() function
                     }
                   },
                 );
@@ -173,33 +169,6 @@ class HomeContent extends StatelessWidget {
             return CircularProgressIndicator();
         }
       },
-    );
-  }
-
-
-  Widget listViewPosts(List<PostModel> posts, UserModel usermodel){
-
-    return ListView(
-      padding: EdgeInsets.all(10.0),
-      scrollDirection: Axis.vertical,
-      children: posts.map((post){
-        return GestureDetector(
-          onTap: (){
-            print("CLICK PLACE: ${post.pid}");
-            //userBloc.placeSelectedSink.add(place);
-          },
-          child: PostFriendDesign(
-              PostModel(
-                  description: post.description,
-                  V_I: post.V_I,
-                  likes: post.likes,
-                  location: post.location,
-                  status: post.status,
-                  dateTimeid: post.dateTimeid,
-              ),
-              userModel)
-        );
-      }).toList(),
     );
   }
 }

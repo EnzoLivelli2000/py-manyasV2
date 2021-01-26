@@ -8,7 +8,6 @@ import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/model/user_model.dart';
 import 'package:manyas_v2/User/ui/screens/profile_header.dart';
 import 'package:manyas_v2/screens/home_content.dart';
-import 'package:manyas_v2/screens/home_posts.dart';
 import 'package:manyas_v2/widgets/background3.dart';
 
 class HomeScreen extends StatefulWidget {

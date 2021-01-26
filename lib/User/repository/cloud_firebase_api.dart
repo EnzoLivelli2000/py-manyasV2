@@ -65,14 +65,15 @@ class CloudFirestoreAPI {
               V_I: p.data()['urlImage'],
               likes: p.data()['likes'],
               status: p.data()['status'],
-              dateTimeid: p.data()['dateTimeid']),
+              dateTimeid: p.data()['dateTimeid'],
+              pid: p.data()['pid']),
           userModel));
     });
     return profilePost;
   }
 
-  List<PostFriendDesign> buildMyFriendPosts(List<DocumentSnapshot> postListSnapshot, UserModel userModel) {
-
+  List<PostFriendDesign> buildMyFriendPosts(
+      List<DocumentSnapshot> postListSnapshot, UserModel userModel) {
     List<PostFriendDesign> profilePost = List<PostFriendDesign>();
     postListSnapshot.forEach((p) {
       profilePost.add(PostFriendDesign(
@@ -82,7 +83,8 @@ class CloudFirestoreAPI {
               V_I: p.data()['urlImage'],
               likes: p.data()['likes'],
               status: p.data()['status'],
-              dateTimeid: p.data()['dateTimeid']),
+              dateTimeid: p.data()['dateTimeid'],
+              pid: p.data()['pid']),
           userModel));
     });
     return profilePost;
@@ -124,7 +126,8 @@ class CloudFirestoreAPI {
   List<SearchPeopleWidget> filterAllUsers(
       List<DocumentSnapshot> peopleListSnapshot, String filterPerson) {
     List<SearchPeopleWidget> listPeopleWidget = List<SearchPeopleWidget>();
-    print('filterPerson: ${filterPerson} - peopleListSnapshot: ${peopleListSnapshot}');
+    print(
+        'filterPerson: ${filterPerson} - peopleListSnapshot: ${peopleListSnapshot}');
 
     peopleListSnapshot
         .where((value) =>
@@ -153,13 +156,9 @@ class CloudFirestoreAPI {
     DocumentReference refFriend = _db.collection(USERS).doc(model.uid);
     await refFriend.get().then((datasnapshot) {
       if (datasnapshot.exists) {
-        //aux = datasnapshot.data()['myFollowers'];
         refFriend.updateData({
           'lengthFollowers': datasnapshot.data()['lengthFollowers'] + 1,
         });
-        //print('model.name: ${model.name}');
-        //print('aux.length: ${aux.length}');
-        //return aux.length;
       } else {
         print('ERROR: ${datasnapshot} no existe');
       }
@@ -183,22 +182,6 @@ class CloudFirestoreAPI {
     DocumentReference refFriend = _db.collection(USERS).doc(model.uid);
     await refFriend.updateData({
       'myFollowers': FieldValue.arrayRemove([_db.doc('${USERS}/${uid}')]),
-    });
-  }
-
-  int lengthFollowersList(UserModel model) {
-    DocumentReference refFriend = _db.collection(USERS).doc(model.uid);
-    int aux;
-    refFriend.get().then((datasnapshot) {
-      if (datasnapshot.exists) {
-        aux = datasnapshot.data()['lengthFollowers'];
-        //updateFollowersLength(model, datasnapshot);
-        //print('model.name: ${model.name}');
-        print('aux: ${aux}');
-        return aux;
-      } else {
-        print('ERROR: ${datasnapshot} no existe');
-      }
     });
   }
 
@@ -230,78 +213,23 @@ class CloudFirestoreAPI {
     ;
   }
 
-  /*Stream<QuerySnapshot> myPlacesListStream() {
-    //final FirebaseAuth _auth = FirebaseAuth.instance;
-    List aux;
-    String uid = _auth.currentUser.uid;
-    DocumentReference refFriend = _db.collection(USERS).doc(uid);
-
-    refFriend.get().then((datasnapshot) {
-      if(datasnapshot.exists){
-        aux = datasnapshot.data()['myFriends'];
-        //updateFollowersLength(model, datasnapshot);
-        //print('model.name: ${model.name}');
-        print('aux: ${aux}');
-      }else{
-        print('ERROR: ${datasnapshot} no existe');
-      }
-    });
-
-    FieldValue.arrayUnion([_db.doc('${USERS}/${uid}')])
-    Firestore.instance.collection(CloudFirestoreAPI().POSTS)
-        .where("userOwner", isEqualTo: Firestore.instance.document("${CloudFirestoreAPI().USERS}/${uid}"))
-        .snapshots();
-  }*/
-
   Future<List<PostFriendDesign>> buildPosts(
-      DocumentReference myfriendsList, UserModel userModel) async {
-    DocumentReference refUser = _db.collection(USERS).doc(myfriendsList.id);
-    DocumentSnapshot ds = await refUser.get();
-    print('myfriendsList :::: -> ${myfriendsList}');
+      List<DocumentReference> myfriendsList, UserModel userModel) async {
     List<PostFriendDesign> profilePost = List<PostFriendDesign>();
 
-    QuerySnapshot qs = await _db.collection(POSTS)
-        .where("userOwner",
-        isEqualTo: Firestore.instance
-            .document("${CloudFirestoreAPI().USERS}/${myfriendsList.id}"))
-        .get();
-
-    qs.docs.forEach((post) {
-      print('${post.data()['description']}');
-      profilePost.add(PostFriendDesign(
-          PostModel(
-              location: post.data()['location'],
-              description: post.data()['description'],
-              V_I: post.data()['urlImage'],
-              likes: post.data()['likes'],
-              status: post.data()['status'],
-              dateTimeid: post.data()['dateTimeid']
-          ),
-          UserModel(
-            photoURL: ds.data()['photoURL'],
-            name: ds.data()['name'],
-            email: ds.data()['email'],
-          )));
-    });
-
-
-    profilePost.sort((a,b) => b.postModel.dateTimeid.compareTo(a.postModel.dateTimeid));
-
-    print(' comprobar si hay más de un elemento en listPeolpleWidget : ${profilePost.length}');
-      return profilePost;
-  }
-
-  Future<List<PostFriendDesign>> buildPosts2(List<DocumentReference> myfriendsList, UserModel userModel) async {
-
-    List<PostFriendDesign> profilePost = List<PostFriendDesign>();
-
-    for(int i = 0; i < myfriendsList.length; i++){
+    for (int i = 0; i < myfriendsList.length; i++) {
       print('myfriendsList.length : ${myfriendsList.length}');
       print('ID myfriendsList : ${myfriendsList[i].id}');
-      DocumentReference refUser = _db.collection(USERS).doc(myfriendsList[i].id);
+      DocumentReference refUser =
+          _db.collection(USERS).doc(myfriendsList[i].id);
       DocumentSnapshot ds = await refUser.get();
 
-      QuerySnapshot qs = await _db.collection(POSTS).where("userOwner", isEqualTo: Firestore.instance.document("${CloudFirestoreAPI().USERS}/${myfriendsList[i].id}")).get();
+      QuerySnapshot qs = await _db
+          .collection(POSTS)
+          .where("userOwner",
+              isEqualTo: Firestore.instance.document(
+                  "${CloudFirestoreAPI().USERS}/${myfriendsList[i].id}"))
+          .get();
 
       qs.docs.forEach((post) {
         print('${post.data()['description']}');
@@ -312,8 +240,8 @@ class CloudFirestoreAPI {
                 V_I: post.data()['urlImage'],
                 likes: post.data()['likes'],
                 status: post.data()['status'],
-                dateTimeid: post.data()['dateTimeid']
-            ),
+                dateTimeid: post.data()['dateTimeid'],
+                pid: post.data()['pid']),
             UserModel(
               photoURL: ds.data()['photoURL'],
               name: ds.data()['name'],
@@ -322,9 +250,89 @@ class CloudFirestoreAPI {
       });
     }
 
-    profilePost.sort((a,b) => b.postModel.dateTimeid.compareTo(a.postModel.dateTimeid));
+    profilePost.sort(
+        (a, b) => b.postModel.dateTimeid.compareTo(a.postModel.dateTimeid));
     return profilePost;
   }
 
-}
+  Future<bool> updateLikePostData(PostModel post, bool isLiked, UserModel userModel) async {
+    DocumentReference refPosts = _db.collection(POSTS).doc((post.pid));
+    DocumentSnapshot documentSnapshot = await refPosts.get();
 
+    List aux = documentSnapshot.data()['UsersLiked'];
+    Iterable<dynamic> visibleUIDs = [];
+
+    //print('esto esss 1 ${ Firestore.instance.document("${CloudFirestoreAPI().USERS}/${userModel.uid}") }');
+    //print('esto esss 2 ${aux}');
+
+    if(aux != null){
+      visibleUIDs = aux.where((UserID) {
+        String aux1 = UserID.toString();
+        String aux2 = Firestore.instance
+            .document("${CloudFirestoreAPI().USERS}/${userModel.uid}")
+            .toString();
+        return aux1.contains(aux2);
+      });
+    }
+
+    //print('visibleUIDs ${visibleUIDs}');
+
+    if (isLiked != true && visibleUIDs.isEmpty || aux == null) {
+      await refPosts.update({
+        'likes': post.likes + 1,
+      }).then((value) {
+        refPosts.updateData({
+          'UsersLiked': FieldValue.arrayUnion([_db.doc('${USERS}/${userModel.uid}')]),
+        });
+      });
+      return true;
+    } else {
+      if(post.likes <= 0){
+        //esto es una medida de seguridad
+        await refPosts.update({
+          'likes': 0,
+        }).then((value) {
+          refPosts.updateData({
+            'UsersLiked': FieldValue.arrayRemove([_db.doc('${USERS}/${userModel.uid}')]),
+          });
+        });
+      }else{
+        await refPosts.update({
+          'likes': post.likes - 1,
+        }).then((value) {
+          refPosts.updateData({
+            'UsersLiked': FieldValue.arrayRemove([_db.doc('${USERS}/${userModel.uid}')]),
+          });
+        });
+      }
+      return true;
+    }
+  }
+
+  Future<bool> ColorLikeButton(PostModel post, UserModel userModel) async {
+    DocumentReference refPosts = _db.collection(POSTS).doc((post.pid));
+    DocumentSnapshot documentSnapshot = await refPosts.get();
+
+    List aux = documentSnapshot.data()['UsersLiked'];
+    Iterable<dynamic> visibleUIDs = [];
+
+    //print('esto esss 1 ${ Firestore.instance.document("${CloudFirestoreAPI().USERS}/${userModel.uid}") }');
+    //print('esto esss 2 ${aux}');
+
+    if(aux != null){
+      visibleUIDs = aux.where((UserID) {
+        String aux1 = UserID.toString();
+        String aux2 = Firestore.instance
+            .document("${CloudFirestoreAPI().USERS}/${userModel.uid}")
+            .toString();
+        return aux1.contains(aux2);
+      });
+    }
+
+    if(visibleUIDs.isEmpty || aux == null){
+      return false;
+    }else{
+      return true;
+    }
+  }
+}

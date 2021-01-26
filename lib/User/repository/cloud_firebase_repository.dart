@@ -28,10 +28,10 @@ class CloudFirestoreRepository {
 
   Future<void> deleteFriendsList(UserModel model) => _cloudFirestoreAPI.deleteFriendsList(model);
 
-  int lengthFollowersList(UserModel model) => _cloudFirestoreAPI.lengthFollowersList(model);
+  Future<List<PostFriendDesign>> buildPosts(List<DocumentReference> userSnapshot, UserModel userModel) => _cloudFirestoreAPI.buildPosts(userSnapshot, userModel);
 
-  Future<List<PostFriendDesign>> buildPosts(DocumentReference userSnapshot, UserModel userModel) => _cloudFirestoreAPI.buildPosts(userSnapshot, userModel);
+  Future<bool> updateLikePostData(PostModel post, bool isLiked, UserModel userModel) => _cloudFirestoreAPI.updateLikePostData(post, isLiked, userModel);
 
-  Future<List<PostFriendDesign>> buildPosts2(List<DocumentReference> userSnapshot, UserModel userModel) => _cloudFirestoreAPI.buildPosts2(userSnapshot, userModel);
+  Future<bool> ColorLikeButton(PostModel post, UserModel userModel) =>_cloudFirestoreAPI.ColorLikeButton(post, userModel);
 
 }

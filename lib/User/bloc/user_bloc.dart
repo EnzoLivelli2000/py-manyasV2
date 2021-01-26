@@ -107,44 +107,31 @@ class UserBloc implements Bloc {
   Future<void> deleteFriendsList(UserModel model) =>
       _cloudFirestoreRepository.deleteFriendsList(model);
 
-  //Case 10.2 Tamaño de la lista de followers
-  int lengthFollowersList(UserModel model) =>
-      _cloudFirestoreRepository.lengthFollowersList(model);
-
-  //Case10.3 Devuelve el tamaño de followers
-  //Future<int> get  getLengthFollowersList => lengthFollowersList(model);
-
-  //11. Stream para poder transmitir solo los usuario amigos
-  //Stream<QuerySnapshot> postsListStream = Firestore.instance.collection(CloudFirestoreAPI().POSTS).snapshots();
-  Stream<QuerySnapshot> postsListStream() =>
-      Firestore.instance.collection(CloudFirestoreAPI().POSTS).snapshots();
-
-  Stream<QuerySnapshot> get postsStream => postsListStream();
-
+  //Case 11. Stream para poder transmitir solo los usuario amigos
   Stream <List<DocumentReference>> get myFriendsListStream async* {
     DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc(FirebaseAuth.instance.currentUser.uid);
 
-    final List<DocumentReference> posts = [];
+    final List<DocumentReference> users = [];
     DocumentSnapshot documentSnapshot = await userRef.get();
     List aux = documentSnapshot.data()['myFriends'];
 
     for(int i = 0; i < aux.length; i++ ){
-       posts.add(aux[i]);
+      users.add(aux[i]);
 
-       yield posts;
+       yield users;
 
     }
   }
 
-
-
+  //Case 11.1 Este Future retorna el Widget con los post de los usuarios amigos que tengas en tu ListFriends
   Future<List<PostFriendDesign>> buildPosts(
-      DocumentReference userSnapshot, UserModel userModel) =>
+      List<DocumentReference> userSnapshot, UserModel userModel) =>
       _cloudFirestoreRepository.buildPosts(userSnapshot, userModel);
 
-  Future<List<PostFriendDesign>> buildPosts2(
-      List<DocumentReference> userSnapshot, UserModel userModel) =>
-      _cloudFirestoreRepository.buildPosts2(userSnapshot, userModel);
+  //Case 12 Este Future actualiza el valor del like en la base de datos
+  Future<bool> updateLikePostData(PostModel post, bool isLiked, UserModel userModel) => _cloudFirestoreRepository.updateLikePostData(post, isLiked, userModel);
+
+  Future<bool> ColorLikeButton(PostModel post, UserModel userModel) =>_cloudFirestoreRepository.ColorLikeButton(post, userModel);
 
   @override
   void dispose() {

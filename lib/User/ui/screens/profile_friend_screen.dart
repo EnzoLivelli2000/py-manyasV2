@@ -35,7 +35,6 @@ class _ProfileFriendScreenState extends State<ProfileFriendScreen> {
       ListView(
         children: <Widget>[
           showProfileHeader(widget.userModel, indexTap),
-//        ChoosePost(userModel: userAux),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -108,20 +107,6 @@ class _ProfileFriendScreenState extends State<ProfileFriendScreen> {
       )
     ]);
   }
-
-  /*void onTapFollow(String titleFollow, bool auxPiv, UserModel userModel) {
-    if (auxPiv != true) {
-      setState(() {
-        titleFollow = 'unfollow';
-      });
-      userBloc.deleteFriendsList(userModel);
-    }else{
-      setState(() {
-        titleFollow = 'follow';
-      });
-      userBloc.updateFriendsList(userModel);
-    }
-  }*/
 
   Widget followButton(UserModel userModel) {
     return Container(

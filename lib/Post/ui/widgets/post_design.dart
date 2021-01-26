@@ -2,16 +2,32 @@ import 'package:bloc_provider/bloc_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:like_button/like_button.dart';
 import 'package:manyas_v2/Post/model/post_model.dart';
 import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/model/user_model.dart';
 
-class PostDesign extends StatelessWidget {
+class PostDesign extends StatefulWidget {
   PostModel postModel;
-  UserBloc userBloc;
   UserModel userModel;
 
   PostDesign(this.postModel, this.userModel);
+
+  @override
+  _PostDesignState createState() => _PostDesignState();
+}
+
+class _PostDesignState extends State<PostDesign> {
+  UserBloc userBloc;
+
+  Future<bool> onLikeButtonTapped(bool isLiked) async{
+    print('se presionó el botón de like ${isLiked}');
+    print('widget.postModel.pid ${widget.postModel.pid}');
+
+    await userBloc.updateLikePostData(widget.postModel, isLiked, widget.userModel);
+
+    return !isLiked;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -23,15 +39,9 @@ class PostDesign extends StatelessWidget {
       decoration: BoxDecoration(
         image: DecorationImage(
           fit: BoxFit.cover,
-          image: CachedNetworkImageProvider(postModel.V_I),
+          image: CachedNetworkImageProvider(widget.postModel.V_I),
         ),
         borderRadius: BorderRadius.all(Radius.circular(20.0)),
-        /*boxShadow: <BoxShadow>[
-            BoxShadow(
-                color: Colors.black38,
-                blurRadius: 10.0,
-                offset: Offset(0.0, 5.0))
-          ]),*/
       ),
     );
 
@@ -48,7 +58,7 @@ class PostDesign extends StatelessWidget {
                 shape: BoxShape.rectangle,
                 image: DecorationImage(
                   fit: BoxFit.cover,
-                  image: NetworkImage(userModel.photoURL),
+                  image: NetworkImage(widget.userModel.photoURL),
                   //image: AssetImage('assets/images/post_photo.PNG')
                 )),
           ),
@@ -57,7 +67,7 @@ class PostDesign extends StatelessWidget {
             children: [
               Text(
                   //userModel.name.length > 11? '${userModel.name.substring(0,15)} ...': userModel.name,
-                  userModel.name,
+                  widget.userModel.name,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 17.0,
@@ -83,7 +93,7 @@ class PostDesign extends StatelessWidget {
     final contentPost = Container(
       margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 25, left: 25),
       alignment: AlignmentDirectional.bottomStart,
-      child: Text(postModel.description,
+      child: Text(widget.postModel.description,
           style: TextStyle(
             fontSize: 15.0,
             fontWeight: FontWeight.bold,
@@ -94,19 +104,27 @@ class PostDesign extends StatelessWidget {
     );
 
     final likes_comments = Container(
-      margin: EdgeInsets.only(bottom: 10.0),
+      margin: EdgeInsets.only(bottom: 10.0, left: 25),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          FlatButton.icon(
-              onPressed: () {
-                print('se presionó el botón de like');
-              },
-              icon: Icon(
-                Icons.favorite_border,
-                color: Color(0xFFF87125),
+              Row(
+                children: [
+                  LikeButton(
+                    //size: 25,
+                    //circleColor: CircleColor(start: Color(0xffFF5733), end: Color(0xffFF4118)),
+                    likeCount: widget.postModel.likes, // falta hacer la lógica para los mayores a 1K y 1M
+                    onTap: onLikeButtonTapped,
+                    likeBuilder: (bool isLiked) {
+                      return Icon(
+                        Icons.favorite,
+                        color: Color(0xFFF87125),
+                      );
+                    },
+                  ),
+                  //Text('${widget.postModel.likes}'),
+                ],
               ),
-              label: Text(postModel.likes.toString())),
           FlatButton.icon(
               onPressed: () {
                 print('se presionó el botón de commnent');
@@ -129,7 +147,7 @@ class PostDesign extends StatelessWidget {
           onPressed: () async {
             print('se presionó: borrar post');
             await userBloc
-                .deletePost(postModel)
+                .deletePost(widget.postModel)
                 .then((value) =>
                     ('se borró de manera exitosa el post selecionado '))
                 .catchError((onError) {

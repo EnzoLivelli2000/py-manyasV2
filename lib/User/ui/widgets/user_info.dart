@@ -1,18 +1,82 @@
 import 'package:bloc_provider/bloc_provider.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/model/user_model.dart';
 
-class UserInfo extends StatelessWidget {
+class UserInfo extends StatefulWidget {
   UserModel userModel;
-  UserBloc userBloc;
-  int followLength;
+
   UserInfo({Key key, this.userModel});
+
+  @override
+  _UserInfoState createState() => _UserInfoState();
+}
+
+class _UserInfoState extends State<UserInfo> {
+  UserBloc userBloc;
+
+  int friendsLength;
+  int followLength;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      _asyncLengthFriends();
+      _asyncLengthFollowers();
+    });
+  }
+
+  void getLengthFriends() {
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      _asyncLengthFriends();
+    });
+  }
+
+  _asyncLengthFriends() async{
+    DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc(widget.userModel.uid);
+    DocumentSnapshot documentSnapshot = await userRef.get();
+    List aux = documentSnapshot.data()['myFriends'];
+
+    if(aux == null){
+      friendsLength = 0;
+    }else{
+      setState(() {
+        friendsLength = aux.length;
+      });
+    }
+  }
+
+  void getLengthFollowers() {
+    WidgetsBinding.instance.addPostFrameCallback((_){
+      _asyncLengthFollowers();
+    });
+  }
+
+  _asyncLengthFollowers() async{
+    DocumentReference userRef = FirebaseFirestore.instance.collection('users').doc(widget.userModel.uid);
+    DocumentSnapshot documentSnapshot = await userRef.get();
+    List aux = documentSnapshot.data()['myFollowers'];
+
+    if(aux == null){
+      setState(() {
+        followLength = 0;
+      });
+    }
+    else{
+      setState(() {
+        followLength = aux.length;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     userBloc = BlocProvider.of(context);
-    followLength = userBloc.lengthFollowersList(userModel);
+    getLengthFriends();
+    getLengthFollowers();
     final userPhoto = Container(
       width: 90.0,
       height: 90.0,
@@ -22,8 +86,7 @@ class UserInfo extends StatelessWidget {
           shape: BoxShape.rectangle,
           image: DecorationImage(
             fit: BoxFit.cover,
-            image: NetworkImage(userModel.photoURL),
-            //image: NetworkImage(user.photoURL),
+            image: NetworkImage(widget.userModel.photoURL),
           )
       ),
     );
@@ -31,14 +94,9 @@ class UserInfo extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: <Widget>[
           Container(
-             /* margin: EdgeInsets.only(
-                  bottom: 5.0
-              ),*/
               padding: new EdgeInsets.only(right: 13.0),
-             // child: Expanded(
                 child: Text(
-                    //userModel.name.length > 11? '${userModel.name.substring(0,15)} ...': userModel.name,
-                    userModel.name,
+                    widget.userModel.name,
                     maxLines: 1,
                     //softWrap: false,
                     overflow: TextOverflow.fade,
@@ -50,10 +108,9 @@ class UserInfo extends StatelessWidget {
                       decoration: TextDecoration.none,
                     )
                 ),
-              //)
           ),
         Text(
-            userModel.email,
+            widget.userModel.email,
             style: TextStyle(
                 fontSize: 15.0,
                 color: Colors.black26,
@@ -64,16 +121,33 @@ class UserInfo extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.only(top: 5),
           child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              Text(
-                  '${followLength} Followers',
-                  style: TextStyle(
-                    fontSize: 15.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black26,
-                    fontFamily: 'Lato',
-                    decoration: TextDecoration.none,
-                  )
+              Container(
+                margin: EdgeInsets.only(right: 4),
+                child: Text(
+                    '${friendsLength == null? 0: friendsLength} Friends',
+                    style: TextStyle(
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black26,
+                      fontFamily: 'Lato',
+                      decoration: TextDecoration.none,
+                    )
+                ),
+              ),
+              Container(
+                margin: EdgeInsets.only(left: 4),
+                child: Text(
+                    '${followLength == null? 0: followLength} Followers',
+                    style: TextStyle(
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black26,
+                      fontFamily: 'Lato',
+                      decoration: TextDecoration.none,
+                    )
+                ),
               ),
             ],
           ),

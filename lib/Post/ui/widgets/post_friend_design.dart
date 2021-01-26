@@ -27,12 +27,6 @@ class PostFriendDesign extends StatelessWidget {
           image: CachedNetworkImageProvider(postModel.V_I),
         ),
         borderRadius: BorderRadius.all(Radius.circular(20.0)),
-        /*boxShadow: <BoxShadow>[
-            BoxShadow(
-                color: Colors.black38,
-                blurRadius: 10.0,
-                offset: Offset(0.0, 5.0))
-          ]),*/
       ),
     );
 
