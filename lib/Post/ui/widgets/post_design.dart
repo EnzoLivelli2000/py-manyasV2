@@ -1,5 +1,6 @@
 import 'package:bloc_provider/bloc_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:like_button/like_button.dart';
@@ -19,18 +20,39 @@ class PostDesign extends StatefulWidget {
 
 class _PostDesignState extends State<PostDesign> {
   UserBloc userBloc;
+  bool colorLikeButton = false;
 
   Future<bool> onLikeButtonTapped(bool isLiked) async{
     print('se presionó el botón de like ${isLiked}');
     print('widget.postModel.pid ${widget.postModel.pid}');
-
-    await userBloc.updateLikePostData(widget.postModel, isLiked, widget.userModel);
+    String uidCurrentUser = await FirebaseAuth.instance.currentUser.uid;
+    await userBloc.updateLikePostData(widget.postModel, isLiked, uidCurrentUser);
 
     return !isLiked;
   }
 
+  bool getColorLikeButton(){
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _asyncColorLikeButton();
+    });
+  }
+
+  _asyncColorLikeButton() async{
+    String uidCurrentUser = await FirebaseAuth.instance.currentUser.uid;
+    bool aux = await userBloc.ColorLikeButton(widget.postModel, uidCurrentUser);
+
+    if(aux == null){
+      colorLikeButton = false;
+    }else{
+      setState(() {
+        colorLikeButton = aux;
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
+    getColorLikeButton();
     userBloc = BlocProvider.of<UserBloc>(context);
     final photoCard = Container(
       margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 15, left: 15),
@@ -118,11 +140,11 @@ class _PostDesignState extends State<PostDesign> {
                     likeBuilder: (bool isLiked) {
                       return Icon(
                         Icons.favorite,
-                        color: Color(0xFFF87125),
+                        color: colorLikeButton != false ?Color(0xFFF87125):Colors.grey,
                       );
                     },
                   ),
-                  //Text('${widget.postModel.likes}'),
+                  //Text('${colorLikeButton != false ? 'You Liked':''}'),
                 ],
               ),
           FlatButton.icon(

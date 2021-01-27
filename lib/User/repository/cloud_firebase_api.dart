@@ -246,6 +246,7 @@ class CloudFirestoreAPI {
               photoURL: ds.data()['photoURL'],
               name: ds.data()['name'],
               email: ds.data()['email'],
+              uid: ds.data()['uid'],
             )));
       });
     }
@@ -255,7 +256,48 @@ class CloudFirestoreAPI {
     return profilePost;
   }
 
-  Future<bool> updateLikePostData(PostModel post, bool isLiked, UserModel userModel) async {
+  List<PostFriendDesign> buildPosts1(
+      List<DocumentReference> myfriendsList, UserModel userModel) {
+    List<PostFriendDesign> profilePost = List<PostFriendDesign>();
+
+    for (int i = 0; i < myfriendsList.length; i++) {
+      print('myfriendsList.length : ${myfriendsList.length}');
+      print('ID myfriendsList : ${myfriendsList[i].id}');
+      DocumentReference refUser = _db.collection(USERS).doc(myfriendsList[i].id);
+      DocumentSnapshot ds;// =  refUser.get();
+
+      QuerySnapshot qs = _db
+          .collection(POSTS)
+          .where("userOwner",
+          isEqualTo: Firestore.instance.document(
+              "${CloudFirestoreAPI().USERS}/${myfriendsList[i].id}"))
+          .get() as QuerySnapshot;
+
+      qs.docs.forEach((post) {
+        print('${post.data()['description']}');
+        profilePost.add(PostFriendDesign(
+            PostModel(
+                location: post.data()['location'],
+                description: post.data()['description'],
+                V_I: post.data()['urlImage'],
+                likes: post.data()['likes'],
+                status: post.data()['status'],
+                dateTimeid: post.data()['dateTimeid'],
+                pid: post.data()['pid']),
+            UserModel(
+              photoURL: ds.data()['photoURL'],
+              name: ds.data()['name'],
+              email: ds.data()['email'],
+            )));
+      });
+    }
+
+    profilePost.sort(
+            (a, b) => b.postModel.dateTimeid.compareTo(a.postModel.dateTimeid));
+    return profilePost;
+  }
+
+  Future<bool> updateLikePostData(PostModel post, bool isLiked, String uID) async {
     DocumentReference refPosts = _db.collection(POSTS).doc((post.pid));
     DocumentSnapshot documentSnapshot = await refPosts.get();
 
@@ -269,7 +311,7 @@ class CloudFirestoreAPI {
       visibleUIDs = aux.where((UserID) {
         String aux1 = UserID.toString();
         String aux2 = Firestore.instance
-            .document("${CloudFirestoreAPI().USERS}/${userModel.uid}")
+            .document("${CloudFirestoreAPI().USERS}/${uID}")
             .toString();
         return aux1.contains(aux2);
       });
@@ -282,7 +324,7 @@ class CloudFirestoreAPI {
         'likes': post.likes + 1,
       }).then((value) {
         refPosts.updateData({
-          'UsersLiked': FieldValue.arrayUnion([_db.doc('${USERS}/${userModel.uid}')]),
+          'UsersLiked': FieldValue.arrayUnion([_db.doc('${USERS}/${uID}')]),
         });
       });
       return true;
@@ -293,7 +335,7 @@ class CloudFirestoreAPI {
           'likes': 0,
         }).then((value) {
           refPosts.updateData({
-            'UsersLiked': FieldValue.arrayRemove([_db.doc('${USERS}/${userModel.uid}')]),
+            'UsersLiked': FieldValue.arrayRemove([_db.doc('${USERS}/${uID}')]),
           });
         });
       }else{
@@ -301,7 +343,7 @@ class CloudFirestoreAPI {
           'likes': post.likes - 1,
         }).then((value) {
           refPosts.updateData({
-            'UsersLiked': FieldValue.arrayRemove([_db.doc('${USERS}/${userModel.uid}')]),
+            'UsersLiked': FieldValue.arrayRemove([_db.doc('${USERS}/${uID}')]),
           });
         });
       }
@@ -309,7 +351,7 @@ class CloudFirestoreAPI {
     }
   }
 
-  Future<bool> ColorLikeButton(PostModel post, UserModel userModel) async {
+  Future<bool> ColorLikeButton(PostModel post, String uID) async {
     DocumentReference refPosts = _db.collection(POSTS).doc((post.pid));
     DocumentSnapshot documentSnapshot = await refPosts.get();
 
@@ -323,7 +365,7 @@ class CloudFirestoreAPI {
       visibleUIDs = aux.where((UserID) {
         String aux1 = UserID.toString();
         String aux2 = Firestore.instance
-            .document("${CloudFirestoreAPI().USERS}/${userModel.uid}")
+            .document("${CloudFirestoreAPI().USERS}/${uID}")
             .toString();
         return aux1.contains(aux2);
       });

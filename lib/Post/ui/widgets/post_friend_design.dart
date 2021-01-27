@@ -1,22 +1,61 @@
 import 'package:bloc_provider/bloc_provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:like_button/like_button.dart';
 import 'package:manyas_v2/Post/model/post_model.dart';
 import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/model/user_model.dart';
 
-class PostFriendDesign extends StatelessWidget {
+class PostFriendDesign extends StatefulWidget {
   PostModel postModel;
-  UserBloc userBloc;
   UserModel userModel;
 
   PostFriendDesign(this.postModel, this.userModel);
 
   @override
+  _PostFriendDesignState createState() => _PostFriendDesignState();
+}
+
+class _PostFriendDesignState extends State<PostFriendDesign> {
+  UserBloc userBloc;
+  bool colorLikeButton = false;
+
+  Future<bool> onLikeButtonTapped(bool isLiked) async{
+    print('se presionó el botón de like ${isLiked}');
+    print('widget.postModel.pid ${widget.postModel.pid}');
+    String uidCurrentUser = await FirebaseAuth.instance.currentUser.uid;
+    await userBloc.updateLikePostData(widget.postModel, isLiked, uidCurrentUser);
+
+    return !isLiked;
+  }
+
+  bool getColorLikeButton(){
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _asyncColorLikeButton();
+    });
+  }
+
+  _asyncColorLikeButton() async{
+    String uidCurrentUser = await FirebaseAuth.instance.currentUser.uid;
+    bool aux = await userBloc.ColorLikeButton(widget.postModel, uidCurrentUser);
+
+    if(aux == null){
+      colorLikeButton = false;
+    }else{
+      setState(() {
+        colorLikeButton = aux;
+      });
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
+    getColorLikeButton();
     userBloc = BlocProvider.of<UserBloc>(context);
+    int likesAux = widget.postModel.likes;
     final photoCard = Container(
       margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 15, left: 15),
       height: 220.0,
@@ -24,7 +63,7 @@ class PostFriendDesign extends StatelessWidget {
       decoration: BoxDecoration(
         image: DecorationImage(
           fit: BoxFit.cover,
-          image: CachedNetworkImageProvider(postModel.V_I),
+          image: CachedNetworkImageProvider(widget.postModel.V_I),
         ),
         borderRadius: BorderRadius.all(Radius.circular(20.0)),
       ),
@@ -44,7 +83,7 @@ class PostFriendDesign extends StatelessWidget {
                 image: DecorationImage(
                   fit: BoxFit.cover,
                   //image: AssetImage('https://firebasestorage.googleapis.com/v0/b/crud-flutter-6c754.appspot.com/o/zXeoV02LgKgWdxFNs1Za6HSbkb72%2F2020-12-18%2018%3A40%3A09.111297.jpg?alt=media&token=92ab258d-6e45-46ca-a6bb-7b424a84e8c6'),
-                  image: NetworkImage(userModel.photoURL),
+                  image: NetworkImage(widget.userModel.photoURL),
                   //image: AssetImage('assets/images/post_photo.PNG')
                 )),
           ),
@@ -53,7 +92,7 @@ class PostFriendDesign extends StatelessWidget {
             children: [
               Text(
                 //userModel.name.length > 11? '${userModel.name.substring(0,15)} ...': userModel.name,
-                  userModel.name,
+                  widget.userModel.name,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
                     fontSize: 17.0,
@@ -79,7 +118,7 @@ class PostFriendDesign extends StatelessWidget {
     final contentPost = Container(
       margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 25, left: 25),
       alignment: AlignmentDirectional.bottomStart,
-      child: Text(postModel.description,
+      child: Text(widget.postModel.description,
           style: TextStyle(
             fontSize: 15.0,
             fontWeight: FontWeight.bold,
@@ -90,19 +129,22 @@ class PostFriendDesign extends StatelessWidget {
     );
 
     final likes_comments = Container(
-      margin: EdgeInsets.only(bottom: 10.0),
+      margin: EdgeInsets.only(bottom: 10.0, left: 25),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-          FlatButton.icon(
-              onPressed: () {
-                print('se presionó el botón de like');
-              },
-              icon: Icon(
-                Icons.favorite_border,
-                color: Color(0xFFF87125),
-              ),
-              label: Text(postModel.likes.toString())),
+          LikeButton(
+            //size: 25,
+            //circleColor: CircleColor(start: Color(0xffFF5733), end: Color(0xffFF4118)),
+            likeCount: widget.postModel.likes, // falta hacer la lógica para los mayores a 1K y 1M
+            onTap: onLikeButtonTapped,
+            likeBuilder: (bool isLiked) {
+              return Icon(
+                Icons.favorite,
+                color: colorLikeButton != false ?Color(0xFFF87125):Colors.grey,
+              );
+            },
+          ),
           FlatButton.icon(
               onPressed: () {
                 print('se presionó el botón de commnent');

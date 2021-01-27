@@ -30,8 +30,10 @@ class CloudFirestoreRepository {
 
   Future<List<PostFriendDesign>> buildPosts(List<DocumentReference> userSnapshot, UserModel userModel) => _cloudFirestoreAPI.buildPosts(userSnapshot, userModel);
 
-  Future<bool> updateLikePostData(PostModel post, bool isLiked, UserModel userModel) => _cloudFirestoreAPI.updateLikePostData(post, isLiked, userModel);
+  List<PostFriendDesign> buildPosts1(List<DocumentReference> userSnapshot, UserModel userModel) => _cloudFirestoreAPI.buildPosts1(userSnapshot, userModel);
 
-  Future<bool> ColorLikeButton(PostModel post, UserModel userModel) =>_cloudFirestoreAPI.ColorLikeButton(post, userModel);
+  Future<bool> updateLikePostData(PostModel post, bool isLiked, String uID) => _cloudFirestoreAPI.updateLikePostData(post, isLiked, uID);
+
+  Future<bool> ColorLikeButton(PostModel post, String uID) =>_cloudFirestoreAPI.ColorLikeButton(post, uID);
 
 }

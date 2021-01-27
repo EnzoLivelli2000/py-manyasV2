@@ -37,7 +37,7 @@ class HomeContent extends StatelessWidget {
     return StreamBuilder(
       stream: userBloc.myFriendsListStream,
       builder: (context, AsyncSnapshot<List<DocumentReference>> snapshot) {
-        final posts = snapshot.data ?? [];
+        final users = snapshot.data ?? [];
         switch (snapshot.connectionState) {
           case ConnectionState.waiting:
             return Container(
@@ -75,7 +75,7 @@ class HomeContent extends StatelessWidget {
               itemCount: 1,
               itemBuilder: (_, i){
                 return FutureBuilder<List<PostFriendDesign>>(
-                  future: userBloc.buildPosts(posts, userModel), // function where you call your api
+                  future: userBloc.buildPosts(users, userModel), // function where you call your api
                   builder: (BuildContext context, AsyncSnapshot<List<PostFriendDesign>> snapshot) {  // AsyncSnapshot<Your object type>
                     if( snapshot.connectionState == ConnectionState.waiting){
                       return Container(
@@ -97,7 +97,7 @@ class HomeContent extends StatelessWidget {
                           margin: EdgeInsets.only(top: 120),
                           alignment: Alignment.center,
                           child: Text(
-                            'Just a minute please!',
+                            'Ups, ocurrió un error',
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 25.0,
@@ -120,17 +120,17 @@ class HomeContent extends StatelessWidget {
           case ConnectionState.active:
             print('snapshot -> ${snapshot}');
             return ListView.builder(
-              itemCount: posts.length,
+              itemCount: 1,
               itemBuilder: (_, i){
                 return FutureBuilder<List<PostFriendDesign>>(
-                  future: userBloc.buildPosts(posts, userModel), // function where you call your api
+                  future: userBloc.buildPosts(users, userModel), // function where you call your api
                   builder: (BuildContext context, AsyncSnapshot<List<PostFriendDesign>> snapshot) {  // AsyncSnapshot<Your object type>
                     if( snapshot.connectionState == ConnectionState.waiting){
                       return Container(
                         margin: EdgeInsets.only(top: 120),
                         alignment: Alignment.center,
                         child: Text(
-                          '',
+                          'Just a minute please!',
                           style: TextStyle(
                             color: Colors.black,
                             fontSize: 25.0,
@@ -145,7 +145,7 @@ class HomeContent extends StatelessWidget {
                           margin: EdgeInsets.only(top: 120),
                           alignment: Alignment.center,
                           child: Text(
-                            '',
+                            'Ups, ocurrió un error',
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 25.0,

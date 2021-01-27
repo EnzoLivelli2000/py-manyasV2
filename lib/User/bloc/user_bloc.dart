@@ -128,10 +128,15 @@ class UserBloc implements Bloc {
       List<DocumentReference> userSnapshot, UserModel userModel) =>
       _cloudFirestoreRepository.buildPosts(userSnapshot, userModel);
 
-  //Case 12 Este Future actualiza el valor del like en la base de datos
-  Future<bool> updateLikePostData(PostModel post, bool isLiked, UserModel userModel) => _cloudFirestoreRepository.updateLikePostData(post, isLiked, userModel);
+  //ESTO ES LA PRUEBA
+  List<PostFriendDesign> buildPosts1(
+      List<DocumentReference> userSnapshot, UserModel userModel) =>
+      _cloudFirestoreRepository.buildPosts1(userSnapshot, userModel);
 
-  Future<bool> ColorLikeButton(PostModel post, UserModel userModel) =>_cloudFirestoreRepository.ColorLikeButton(post, userModel);
+  //Case 12 Este Future actualiza el valor del like en la base de datos
+  Future<bool> updateLikePostData(PostModel post, bool isLiked, String uID) => _cloudFirestoreRepository.updateLikePostData(post, isLiked, uID);
+
+  Future<bool> ColorLikeButton(PostModel post, String uID) =>_cloudFirestoreRepository.ColorLikeButton(post, uID);
 
   @override
   void dispose() {
