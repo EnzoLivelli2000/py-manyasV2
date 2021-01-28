@@ -44,7 +44,7 @@ class CloudFirestoreAPI {
         DocumentReference refUsers = _db.collection(USERS).doc(uid);
         refUsers.updateData({
           'myPosts':
-              FieldValue.arrayUnion([_db.doc('${POSTS}/${snapshot.id}')]),
+          FieldValue.arrayUnion([_db.doc('${POSTS}/${snapshot.id}')]),
         });
         DocumentReference postUpdate = _db.collection(POSTS).doc(snapshot.id);
         postUpdate.updateData({
@@ -54,8 +54,8 @@ class CloudFirestoreAPI {
     });
   }
 
-  List<PostDesign> buildMyPosts(
-      List<DocumentSnapshot> placesListSnapshot, UserModel userModel) {
+  List<PostDesign> buildMyPosts(List<DocumentSnapshot> placesListSnapshot,
+      UserModel userModel) {
     List<PostDesign> profilePost = List<PostDesign>();
     placesListSnapshot.forEach((p) {
       profilePost.add(PostDesign(
@@ -69,6 +69,10 @@ class CloudFirestoreAPI {
               pid: p.data()['pid']),
           userModel));
     });
+
+    profilePost.sort(
+            (a, b) => b.postModel.dateTimeid.compareTo(a.postModel.dateTimeid));
+
     return profilePost;
   }
 
@@ -87,35 +91,44 @@ class CloudFirestoreAPI {
               pid: p.data()['pid']),
           userModel));
     });
+
+    profilePost.sort(
+            (a, b) => b.postModel.dateTimeid.compareTo(a.postModel.dateTimeid));
+
     return profilePost;
   }
 
   Future<void> deletePost(PostModel postModel) async {
     String uid = await _auth.currentUser.uid;
     QuerySnapshot querySnapshot =
-        await Firestore.instance.collection(POSTS).getDocuments();
+    await Firestore.instance.collection(POSTS).getDocuments();
     print('querySnapshot : ${querySnapshot}');
     //var postToDelete = querySnapshot.documents.where((element) => element.data()['pid'] == postModel.pid);
     for (int i = 0; i < querySnapshot.documents.length; i++) {
       var a = querySnapshot.documents[i];
       print(
-          'Firebase: ${a.data()['dateTimeid']}  PostModel: ${postModel.dateTimeid}');
+          'Firebase: ${a.data()['dateTimeid']}  PostModel: ${postModel
+              .dateTimeid}');
       if (a.data()['dateTimeid'] == postModel.dateTimeid) {
         CollectionReference postRef = _db.collection(POSTS);
         await postRef
             .doc(a.data()['pid'])
             .delete()
             .then((value) => print('se borró el post en la collection POSTS'))
-            .catchError((onError) => print(
+            .catchError((onError) =>
+            print(
                 'Error al borrar el post, cloudFirebase API: ${onError}'));
         DocumentReference refUsers = _db.collection(USERS).doc(uid);
         await refUsers
             .updateData({
-              'myPosts': FieldValue.arrayRemove(
-                  [_db.doc('${USERS}/${a.data()['pid']}')]),
-            })
-            .then((value) => print(
-                'se borró el post -> (${a.data()['pid']}) en la lista de usuario -> (${refUsers.id})'))
+          'myPosts': FieldValue.arrayRemove(
+              [_db.doc('${USERS}/${a.data()['pid']}')]),
+        })
+            .then((value) =>
+            print(
+                'se borró el post -> (${a
+                    .data()['pid']}) en la lista de usuario -> (${refUsers
+                    .id})'))
             .catchError((onError) => print('Error ${onError}'));
       } else {
         print('no se encontró el post que desea borrar');
@@ -126,30 +139,34 @@ class CloudFirestoreAPI {
   List<SearchPeopleWidget> filterAllUsers(
       List<DocumentSnapshot> peopleListSnapshot, String filterPerson) {
     List<SearchPeopleWidget> listPeopleWidget = List<SearchPeopleWidget>();
-    print(
-        'filterPerson: ${filterPerson} - peopleListSnapshot: ${peopleListSnapshot}');
+    print('filterPerson: ${filterPerson} - peopleListSnapshot: ${peopleListSnapshot}');
 
     peopleListSnapshot
         .where((value) =>
-            value['name'].toLowerCase().contains(filterPerson.toLowerCase()))
+        value['name'].toLowerCase().contains(filterPerson.toLowerCase()))
         .forEach((p) {
-      listPeopleWidget.add(SearchPeopleWidget(
-        userModel: UserModel(
-            email: p.data()['email'],
-            // followers: p.data()['followers'],
-            name: p.data()['name'],
-            photoURL: p.data()['photoURL'],
-            uid: p.data()['uid']),
-      ));
-    });
+        listPeopleWidget.add(SearchPeopleWidget(
+          userModel: UserModel(
+              email: p.data()['email'],
+              // followers: p.data()['followers'],
+              name: p.data()['name'],
+              photoURL: p.data()['photoURL'],
+              uid: p.data()['uid']),)
+        );
+      });
     return listPeopleWidget;
   }
 
-  Future<void> updateFollowersList(String uid, UserModel model) async {
+  Future<void> updateFollowersList(String uidFriend, UserModel model) async {
     DocumentReference refFriend = _db.collection(USERS).doc(model.uid);
-    await refFriend.updateData({
-      'myFollowers': FieldValue.arrayUnion([_db.doc('${USERS}/${uid}')]),
-    });
+
+    if (model.uid.toString() != uidFriend) {
+      await refFriend.updateData({
+        'myFollowers': FieldValue.arrayUnion([_db.doc('${USERS}/${uidFriend}')]),
+      });
+    }else{
+      print('NO puedes autoseguirte');
+    }
   }
 
   Future<void> incrementFollowersLength(UserModel model) async {
@@ -189,13 +206,17 @@ class CloudFirestoreAPI {
     String uid = await _auth.currentUser.uid;
     DocumentReference refUser = _db.collection(USERS).doc(uid);
 
-    await refUser.update({
-      'myFriends': FieldValue.arrayUnion([_db.doc('${USERS}/${model.uid}')]),
-    }).then((value) {
-      updateFollowersList(uid, model);
-      incrementFollowersLength(model);
-      print('Se agrego ${model.name} a la lista de amigos de ${refUser}');
-    });
+    if(uid != model.uid ){
+      await refUser.update({
+        'myFriends': FieldValue.arrayUnion([_db.doc('${USERS}/${model.uid}')]),
+      }).then((value) {
+        updateFollowersList(uid, model);
+        incrementFollowersLength(model);
+        print('Se agrego ${model.name} a la lista de amigos de ${refUser}');
+      });
+    }else{
+      print('NO puedes autoseguirte');
+    }
   }
 
   Future<void> deleteFriendsList(UserModel model) async {
@@ -203,14 +224,18 @@ class CloudFirestoreAPI {
     DocumentReference refUser = _db.collection(USERS).doc(uid);
     DocumentReference refFriend = _db.collection(USERS).doc(model.uid);
 
-    await refUser.update({
-      'myFriends': FieldValue.arrayRemove([_db.doc('${USERS}/${model.uid}')]),
-    }).then((value) {
-      deleteFollowersList(uid, model);
-      decrementFollowersLength(model);
-      print('Se eliminó ${model.name} de la lista de amigos de ${refUser}');
-    });
-    ;
+    if(uid != model.uid ) {
+      await refUser.update({
+        'myFriends': FieldValue.arrayRemove([_db.doc('${USERS}/${model.uid}')]),
+      }).then((value) {
+        deleteFollowersList(uid, model);
+        decrementFollowersLength(model);
+        print('Se eliminó ${model.name} de la lista de amigos de ${refUser}');
+      });
+    }else{
+      print('NO puedes autoseguirte');
+    }
+
   }
 
   Future<List<PostFriendDesign>> buildPosts(
@@ -221,14 +246,14 @@ class CloudFirestoreAPI {
       print('myfriendsList.length : ${myfriendsList.length}');
       print('ID myfriendsList : ${myfriendsList[i].id}');
       DocumentReference refUser =
-          _db.collection(USERS).doc(myfriendsList[i].id);
+      _db.collection(USERS).doc(myfriendsList[i].id);
       DocumentSnapshot ds = await refUser.get();
 
       QuerySnapshot qs = await _db
           .collection(POSTS)
           .where("userOwner",
-              isEqualTo: Firestore.instance.document(
-                  "${CloudFirestoreAPI().USERS}/${myfriendsList[i].id}"))
+          isEqualTo: Firestore.instance.document(
+              "${CloudFirestoreAPI().USERS}/${myfriendsList[i].id}"))
           .get();
 
       qs.docs.forEach((post) {
@@ -252,19 +277,20 @@ class CloudFirestoreAPI {
     }
 
     profilePost.sort(
-        (a, b) => b.postModel.dateTimeid.compareTo(a.postModel.dateTimeid));
+            (a, b) => b.postModel.dateTimeid.compareTo(a.postModel.dateTimeid));
     return profilePost;
   }
 
-  List<PostFriendDesign> buildPosts1(
-      List<DocumentReference> myfriendsList, UserModel userModel) {
+  List<PostFriendDesign> buildPosts1(List<DocumentReference> myfriendsList,
+      UserModel userModel) {
     List<PostFriendDesign> profilePost = List<PostFriendDesign>();
 
     for (int i = 0; i < myfriendsList.length; i++) {
       print('myfriendsList.length : ${myfriendsList.length}');
       print('ID myfriendsList : ${myfriendsList[i].id}');
-      DocumentReference refUser = _db.collection(USERS).doc(myfriendsList[i].id);
-      DocumentSnapshot ds;// =  refUser.get();
+      DocumentReference refUser = _db.collection(USERS).doc(
+          myfriendsList[i].id);
+      DocumentSnapshot ds; // =  refUser.get();
 
       QuerySnapshot qs = _db
           .collection(POSTS)
@@ -297,7 +323,8 @@ class CloudFirestoreAPI {
     return profilePost;
   }
 
-  Future<bool> updateLikePostData(PostModel post, bool isLiked, String uID) async {
+  Future<bool> updateLikePostData(PostModel post, bool isLiked,
+      String uID) async {
     DocumentReference refPosts = _db.collection(POSTS).doc((post.pid));
     DocumentSnapshot documentSnapshot = await refPosts.get();
 
@@ -307,7 +334,7 @@ class CloudFirestoreAPI {
     //print('esto esss 1 ${ Firestore.instance.document("${CloudFirestoreAPI().USERS}/${userModel.uid}") }');
     //print('esto esss 2 ${aux}');
 
-    if(aux != null){
+    if (aux != null) {
       visibleUIDs = aux.where((UserID) {
         String aux1 = UserID.toString();
         String aux2 = Firestore.instance
@@ -321,7 +348,7 @@ class CloudFirestoreAPI {
 
     if (isLiked != true && visibleUIDs.isEmpty || aux == null) {
       await refPosts.update({
-        'likes': post.likes + 1,
+        'likes': documentSnapshot.data()['likes'] + 1,
       }).then((value) {
         refPosts.updateData({
           'UsersLiked': FieldValue.arrayUnion([_db.doc('${USERS}/${uID}')]),
@@ -329,26 +356,28 @@ class CloudFirestoreAPI {
       });
       return true;
     } else {
-      if(post.likes <= 0){
-        //esto es una medida de seguridad
-        await refPosts.update({
-          'likes': 0,
-        }).then((value) {
-          refPosts.updateData({
-            'UsersLiked': FieldValue.arrayRemove([_db.doc('${USERS}/${uID}')]),
-          });
+      await refPosts.update({
+        'likes': documentSnapshot.data()['likes'] - 1,
+      }).then((value) {
+        refPosts.updateData({
+          'UsersLiked': FieldValue.arrayRemove([_db.doc('${USERS}/${uID}')]),
         });
-      }else{
-        await refPosts.update({
-          'likes': post.likes - 1,
-        }).then((value) {
-          refPosts.updateData({
-            'UsersLiked': FieldValue.arrayRemove([_db.doc('${USERS}/${uID}')]),
-          });
-        });
-      }
-      return true;
+      });
     }
+    return true;
+
+    /*else {
+    if(post.likes <= 0){
+    //esto es una medida de seguridad
+    await refPosts.update({
+    'likes': 0,
+    }).then((value) {
+    refPosts.updateData({
+    'UsersLiked': FieldValue.arrayRemove([_db.doc('${USERS}/${uID}')]),
+    });
+    });
+    }
+    }*/
   }
 
   Future<bool> ColorLikeButton(PostModel post, String uID) async {
@@ -361,7 +390,7 @@ class CloudFirestoreAPI {
     //print('esto esss 1 ${ Firestore.instance.document("${CloudFirestoreAPI().USERS}/${userModel.uid}") }');
     //print('esto esss 2 ${aux}');
 
-    if(aux != null){
+    if (aux != null) {
       visibleUIDs = aux.where((UserID) {
         String aux1 = UserID.toString();
         String aux2 = Firestore.instance
@@ -371,10 +400,17 @@ class CloudFirestoreAPI {
       });
     }
 
-    if(visibleUIDs.isEmpty || aux == null){
+    if (visibleUIDs.isEmpty || aux == null) {
       return false;
-    }else{
+    } else {
       return true;
     }
+  }
+
+  Future<int> LengthLikes(PostModel post) async {
+    DocumentReference refPosts = _db.collection(POSTS).doc((post.pid));
+    DocumentSnapshot documentSnapshot = await refPosts.get();
+
+    return documentSnapshot.data()['likes'];
   }
 }

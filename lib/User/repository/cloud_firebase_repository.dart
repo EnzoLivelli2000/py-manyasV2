@@ -36,4 +36,5 @@ class CloudFirestoreRepository {
 
   Future<bool> ColorLikeButton(PostModel post, String uID) =>_cloudFirestoreAPI.ColorLikeButton(post, uID);
 
+  Future<int> LengthLikes(PostModel post) => _cloudFirestoreAPI.LengthLikes(post);
 }

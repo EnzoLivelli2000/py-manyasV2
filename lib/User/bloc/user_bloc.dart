@@ -138,6 +138,8 @@ class UserBloc implements Bloc {
 
   Future<bool> ColorLikeButton(PostModel post, String uID) =>_cloudFirestoreRepository.ColorLikeButton(post, uID);
 
+  Future<int> LengthLikes(PostModel post) => _cloudFirestoreRepository.LengthLikes(post);
+
   @override
   void dispose() {
     // TODO: implement dispose

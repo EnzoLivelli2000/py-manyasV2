@@ -21,6 +21,8 @@ class PostDesign extends StatefulWidget {
 class _PostDesignState extends State<PostDesign> {
   UserBloc userBloc;
   bool colorLikeButton = false;
+  int countLikes;
+  bool isLikedX = false;
 
   Future<bool> onLikeButtonTapped(bool isLiked) async{
     print('se presionó el botón de like ${isLiked}');
@@ -37,22 +39,45 @@ class _PostDesignState extends State<PostDesign> {
     });
   }
 
+  void getLengthLike(){
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _asyncLengthLike();
+    });
+  }
+
   _asyncColorLikeButton() async{
     String uidCurrentUser = await FirebaseAuth.instance.currentUser.uid;
     bool aux = await userBloc.ColorLikeButton(widget.postModel, uidCurrentUser);
 
     if(aux == null){
-      colorLikeButton = false;
+      if (mounted) {
+        setState(() {
+          colorLikeButton = false;
+        });
+      }
     }else{
+      if (mounted) {
+        setState(() {
+          colorLikeButton = aux;
+        });
+      }
+    }
+  }
+
+  _asyncLengthLike() async{
+    int aux = await userBloc.LengthLikes(widget.postModel);
+    if (mounted) {
       setState(() {
-        colorLikeButton = aux;
+        countLikes = aux;
       });
     }
+
   }
 
   @override
   Widget build(BuildContext context) {
     getColorLikeButton();
+    getLengthLike();
     userBloc = BlocProvider.of<UserBloc>(context);
     final photoCard = Container(
       margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 15, left: 15),
@@ -126,27 +151,24 @@ class _PostDesignState extends State<PostDesign> {
     );
 
     final likes_comments = Container(
-      margin: EdgeInsets.only(bottom: 10.0, left: 25),
+      margin: EdgeInsets.only(bottom: 10.0, left: 5),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
         children: <Widget>[
-              Row(
-                children: [
-                  LikeButton(
-                    //size: 25,
-                    //circleColor: CircleColor(start: Color(0xffFF5733), end: Color(0xffFF4118)),
-                    likeCount: widget.postModel.likes, // falta hacer la lógica para los mayores a 1K y 1M
-                    onTap: onLikeButtonTapped,
-                    likeBuilder: (bool isLiked) {
-                      return Icon(
-                        Icons.favorite,
-                        color: colorLikeButton != false ?Color(0xFFF87125):Colors.grey,
-                      );
-                    },
-                  ),
-                  //Text('${colorLikeButton != false ? 'You Liked':''}'),
-                ],
+          Row(
+            children: [
+              IconButton(
+                icon: Icon(Icons.favorite,  color: colorLikeButton != false ?Color(0xFFF87125):Colors.grey,),
+                onPressed: () async {
+                  print('se presionó el nuevo botón de LIKE');
+                  await onLikeButtonTapped(isLikedX);
+                  await getLengthLike();
+                  print('El valor de like (SALIDA) ${isLikedX}');
+                },
               ),
+              Text('${countLikes}'),
+            ],
+          ),
           FlatButton.icon(
               onPressed: () {
                 print('se presionó el botón de commnent');
