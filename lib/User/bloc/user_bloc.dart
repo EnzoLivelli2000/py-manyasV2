@@ -140,6 +140,10 @@ class UserBloc implements Bloc {
 
   Future<int> LengthLikes(PostModel post) => _cloudFirestoreRepository.LengthLikes(post);
 
+  Future<bool> SALVADORALIST(String uID, UserModel userModel) => _cloudFirestoreRepository.SALVADORALIST(uID, userModel);
+
+  Future<bool> ColorFollowButton(String CurrentUId, UserModel userModel) async => _cloudFirestoreRepository.ColorFollowButton(CurrentUId, userModel);
+
   @override
   void dispose() {
     // TODO: implement dispose

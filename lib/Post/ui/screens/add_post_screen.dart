@@ -26,6 +26,7 @@ class AddPostScreen extends StatefulWidget {
 class _AddPostScreenState extends State<AddPostScreen> {
   final _controllerDescriptionPost = TextEditingController();
   final _controllerLocationPost = TextEditingController();
+  bool fullSize = false;
 
   @override
   Widget build(BuildContext context) {
@@ -104,41 +105,48 @@ class _AddPostScreenState extends State<AddPostScreen> {
                   ),
                   Container(
                     child: ButtonOrange(
-                      titleButton: 'Add Post',
+                      titleButton: fullSize ? 'Loading...' : 'Add Post',
                       onPressed: () {
-                        String uid;
-                        String path;
-                        userBloc.currentUser().then((User user) => {
-                          if (user != null)
-                            {
-                              uid = user.uid,
-                              path = "${uid}/${DateTime.now().toString()}.jpg",
-                              //1. Firebase Storage
-                              userBloc.uploadFile(path, widget.image).then((StorageUploadTask storageUploadTask){
-                                Text('Cargando Imagen');
-                                storageUploadTask.onComplete.then((StorageTaskSnapshot snapshot){
-                                  snapshot.ref.getDownloadURL().then((urlImage){
-                                    print('URL_IMAGE: ${urlImage}');
+                        if(!fullSize){
+                          print('ANTES fullSize ${fullSize}');
+                          print('entrooooooooo');
+                          fullSize = !fullSize;
+                          print('DESPUES fullSize ${fullSize}');
+                          String uid;
+                          String path;
+                          userBloc.currentUser().then((User user) => {
+                            if (user != null)
+                              {
+                                uid = user.uid,
+                                path = "${uid}/${DateTime.now().toString()}.jpg",
+                                //1. Firebase Storage
+                                userBloc.uploadFile(path, widget.image).then((StorageUploadTask storageUploadTask){
+                                  Text('Cargando Imagen');
+                                  storageUploadTask.onComplete.then((StorageTaskSnapshot snapshot){
+                                    snapshot.ref.getDownloadURL().then((urlImage){
+                                      print('URL_IMAGE: ${urlImage}');
 
-                                    //2. Cloud Firestore
-                                    userBloc.updatePostData(PostModel(
-                                      description: _controllerDescriptionPost.text,
-                                      location: _controllerLocationPost.text,
-                                      V_I : urlImage,
-                                      likes: 0,
-                                      status: true,
-                                      dateTimeid: DateTime.now().toString(),
-                                    )).whenComplete(() {
-                                      print('Proceso terminado');
-                                      Navigator.pop(context);
+                                      //2. Cloud Firestore
+                                      userBloc.updatePostData(PostModel(
+                                        description: _controllerDescriptionPost.text,
+                                        location: _controllerLocationPost.text,
+                                        V_I : urlImage,
+                                        likes: 0,
+                                        status: true,
+                                        dateTimeid: DateTime.now().toString(),
+                                      )).whenComplete(() {
+                                        print('Proceso terminado');
+                                        Navigator.pop(context);
+                                      });
+
                                     });
-
                                   });
-                                });
-                              })
-                            }
-                        });
-
+                                })
+                              }
+                          });
+                        }else{
+                          print('Solo presione una vez el boton de subir foto maldito malparido :)');
+                        }
                         print('se presionó -> Subir post ');
                       },
                       width: 230,

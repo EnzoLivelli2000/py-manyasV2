@@ -1,4 +1,5 @@
 import 'package:bloc_provider/bloc_provider.dart';
+import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
 import 'package:flutter/material.dart';
 import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/model/user_model.dart';
@@ -20,11 +21,53 @@ class ProfileFriendScreen extends StatefulWidget {
 class _ProfileFriendScreenState extends State<ProfileFriendScreen> {
   int indexTap = 0;
   UserBloc userBloc;
+  bool colorFollowButton = false;
+  bool isFollowedX = false;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    getColorFollowButton();
+    super.initState();
+  }
 
   void onTapTapped(int index) {
     setState(() {
       indexTap = index;
     });
+  }
+
+  Future<bool> onFollowButtonTapped(bool isFollowedX) async{
+    print('se presionó el botón de like ${isFollowedX}');
+    String uidCurrentUser = await firebaseAuth.FirebaseAuth.instance.currentUser.uid;
+    colorFollowButton = await userBloc.SALVADORALIST(uidCurrentUser, widget.userModel);
+    return !isFollowedX;
+  }
+
+  bool getColorFollowButton() {
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _asyncColorFollowButton();
+    });
+  }
+
+  _asyncColorFollowButton() async {
+    String uidCurrentUser = await firebaseAuth.FirebaseAuth.instance.currentUser.uid;
+    bool aux = await userBloc.ColorFollowButton(uidCurrentUser, widget.userModel);
+    print('aux ${aux}');
+
+    if (aux == null) {
+      if (mounted) {
+        setState(() {
+          colorFollowButton = false;
+        });
+      }
+    } else {
+      if (mounted) {
+        setState(() {
+          colorFollowButton = aux;
+        });
+      }
+    }
   }
 
   @override
@@ -38,7 +81,7 @@ class _ProfileFriendScreenState extends State<ProfileFriendScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              followButton(widget.userModel),
+              followButton(widget.userModel, colorFollowButton),
               messageButton(widget.userModel),
             ],
           ),
@@ -108,18 +151,24 @@ class _ProfileFriendScreenState extends State<ProfileFriendScreen> {
     ]);
   }
 
-  Widget followButton(UserModel userModel) {
+  Widget followButton(UserModel userModel, bool colorFollowButton) {
     return Container(
       margin: EdgeInsets.only(bottom: 35, right: 10),
       child: ButtonX(
-        onPressed: () {
-          print('follow');
+        onPressed: () async{
+          print('se presionó el nuevo botón de FOLLOW');
+          await onFollowButtonTapped(isFollowedX);
+          //await getLengthFollow();
+          getColorFollowButton();
+          print('El valor de like (SALIDA) ${colorFollowButton}');
+          /*print('follow');
           userBloc.updateFriendsList(userModel);
+          getColorFollowButton();*/
         },
         titleButton: 'follow',
         height: 30,
         width: 90,
-        buttonColor: Color(0xFF3EF850),
+        buttonColor: colorFollowButton == false ? Color(0xFF3EF850):Colors.grey,
       ),
     );
   }

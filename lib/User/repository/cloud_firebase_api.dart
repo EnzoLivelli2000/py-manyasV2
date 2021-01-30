@@ -238,6 +238,53 @@ class CloudFirestoreAPI {
 
   }
 
+  Future<bool> SALVADORALIST(String CurrentUId, UserModel userModel) async {
+    DocumentReference refUser = _db.collection(USERS).doc(CurrentUId);
+    DocumentSnapshot documentSnapshot = await refUser.get();
+
+    List aux = documentSnapshot.data()['myFriends'];
+    Iterable<dynamic> visibleUIDs = [];
+
+    /*bool x = aux.contains(Firestore.instance
+        .document("${CloudFirestoreAPI().USERS}/${uID}")
+        .toString());
+    print('xxx ${x}');*/
+
+    /*if (aux != null) {
+      visibleUIDs = aux.where((UserID) {
+        String aux1 = UserID.toString();
+        String aux2 = Firestore.instance
+            .document("${CloudFirestoreAPI().USERS}/${CurrentUId}")
+            .toString();
+        print('aux1: ${aux1}, aux2: ${aux2}');
+        return aux1.contains(aux2);
+      });
+    }*/
+
+    if(aux != null) {
+      visibleUIDs = aux.where((element) {
+            return element.toString().contains(Firestore.instance.document("${CloudFirestoreAPI().USERS}/${userModel.uid}").toString());
+          });
+    }
+
+    print('el valor de visibleUIDs es: ${visibleUIDs}');
+
+    if(aux != null){
+      if (visibleUIDs.isEmpty) {
+        print('entro el update friend');
+        await updateFriendsList(userModel);
+        return true;
+      } else {
+        print('entro el delete friend');
+        await deleteFriendsList(userModel);
+        return false;
+      }
+    }else{
+      print('ocurrio un error al presionasr el botn de follow');
+      return null;
+    }
+  }
+
   Future<List<PostFriendDesign>> buildPosts(
       List<DocumentReference> myfriendsList, UserModel userModel) async {
     List<PostFriendDesign> profilePost = List<PostFriendDesign>();
@@ -332,7 +379,7 @@ class CloudFirestoreAPI {
     Iterable<dynamic> visibleUIDs = [];
 
     //print('esto esss 1 ${ Firestore.instance.document("${CloudFirestoreAPI().USERS}/${userModel.uid}") }');
-    //print('esto esss 2 ${aux}');
+    print('esto aux 2 ${aux}');
 
     if (aux != null) {
       visibleUIDs = aux.where((UserID) {
@@ -405,6 +452,50 @@ class CloudFirestoreAPI {
     } else {
       return true;
     }
+  }
+
+  Future<bool> ColorFollowButton(String CurrentUId, UserModel userModel) async {
+      DocumentReference refUser = _db.collection(USERS).doc(CurrentUId);
+      DocumentSnapshot documentSnapshot = await refUser.get();
+
+      List aux = documentSnapshot.data()['myFriends'];
+      Iterable<dynamic> visibleUIDs = [];
+
+      /*bool x = aux.contains(Firestore.instance
+        .document("${CloudFirestoreAPI().USERS}/${uID}")
+        .toString());
+    print('xxx ${x}');*/
+
+      /*if (aux != null) {
+      visibleUIDs = aux.where((UserID) {
+        String aux1 = UserID.toString();
+        String aux2 = Firestore.instance
+            .document("${CloudFirestoreAPI().USERS}/${CurrentUId}")
+            .toString();
+        print('aux1: ${aux1}, aux2: ${aux2}');
+        return aux1.contains(aux2);
+      });
+    }*/
+
+      if(aux != null) {
+        visibleUIDs = aux.where((element) {
+          return element.toString().contains(Firestore.instance.document("${CloudFirestoreAPI().USERS}/${userModel.uid}").toString());
+        });
+      }
+
+      print('el valor de visibleUIDs es: ${visibleUIDs}');
+
+      if(aux != null){
+        if (visibleUIDs.isEmpty) {
+          return false;
+        } else {
+          return true;
+        }
+      }else{
+        print('ocurrio un error al presionasr el botn de follow');
+        return null;
+      }
+
   }
 
   Future<int> LengthLikes(PostModel post) async {
