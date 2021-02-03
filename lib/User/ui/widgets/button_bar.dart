@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:bloc_provider/bloc_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:manyas_v2/Party/ui/screens/add_party_screen1.dart';
 import 'package:manyas_v2/Post/ui/screens/add_post_screen.dart';
 import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/ui/screens/profile_screen.dart';
@@ -49,6 +50,22 @@ class ButtonsBar extends StatelessWidget {
                     }else{
                       Navigator.push(context,
                           MaterialPageRoute(builder: (BuildContext context) => AddPostScreen(image: image)));
+                    }
+                  }).catchError((onError) => Navigator.of(context).pop());
+                  break;
+                case 2:
+                  ImagePicker.pickImage(source: ImageSource.camera).then((File image){
+                    if(image == null){
+                      print('entroooooooooooooooooooooooooooooooooooooooooooo');
+                      //Navigator.of(context).pop();
+                      return BlocProvider<UserBloc>(
+                        creator:(_context, _bag) =>UserBloc(),
+                        child: ProfileScreen(),
+                      );
+                      //Navigator.push(context,MaterialPageRoute(builder: (BuildContext context) =>ProfileScreen()));
+                    }else{
+                      Navigator.push(context,
+                          MaterialPageRoute(builder: (BuildContext context) => AddPartyScreen1(image: image)));
                     }
                   }).catchError((onError) => Navigator.of(context).pop());
                   break;

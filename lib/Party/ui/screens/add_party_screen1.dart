@@ -4,6 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 import 'package:bloc_provider/bloc_provider.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:manyas_v2/Party/ui/screens/add_party_screen2.dart';
 import 'package:manyas_v2/Post/model/post_model.dart';
 import 'package:manyas_v2/Post/ui/widgets/card_image.dart';
 import 'package:manyas_v2/User/bloc/user_bloc.dart';
@@ -14,18 +15,19 @@ import 'package:manyas_v2/widgets/title_header.dart';
 import 'package:manyas_v2/widgets/title_input_location.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 
-class AddPostScreen extends StatefulWidget {
+class AddPartyScreen1 extends StatefulWidget {
   File image;
 
-  AddPostScreen({Key key, @required this.image});
+  AddPartyScreen1({Key key, @required this.image});
 
   @override
-  _AddPostScreenState createState() => _AddPostScreenState();
+  _AddPartyScreen1State createState() => _AddPartyScreen1State();
 }
 
-class _AddPostScreenState extends State<AddPostScreen> {
-  final _controllerDescriptionPost = TextEditingController();
-  final _controllerLocationPost = TextEditingController();
+class _AddPartyScreen1State extends State<AddPartyScreen1> {
+  final _controllerTitleParty = TextEditingController();
+  final _controllerDescriptionParty = TextEditingController();
+  final _controllerLocationParty = TextEditingController();
   bool fullSize = false;
 
   @override
@@ -65,7 +67,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
                        child: Container(
                          padding: EdgeInsets.only(top: 35, left: 20, right: 10),
                          child: TitleHeader(
-                           title: 'Add a new Post',
+                           title: 'Add a new Party',
                          ),
                        )),
                  ],
@@ -88,67 +90,38 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     ),
                   ),
                   Container(
-                      margin: EdgeInsets.only(top: 30.0, bottom: 10.0),
+                      margin: EdgeInsets.only(top: 20.0, bottom: 10.0),
+                      child: TextInput(
+                        hintText: 'Title',
+                        inputType: TextInputType.multiline,
+                        maxLines: 1,
+                        controller: _controllerTitleParty,
+                      )),
+                  Container(
+                      margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
                       child: TextInput(
                         hintText: 'Description',
                         inputType: TextInputType.multiline,
                         maxLines: 6,
-                        controller: _controllerDescriptionPost,
+                        controller: _controllerDescriptionParty,
                       )),
                   Container(
                     margin: EdgeInsets.only(top: 10.0),
                     child: TextInputLocation(
-                      hintText: 'Add your location',
+                      hintText: 'Add your party location',
                       iconData: Icons.location_on,
-                      controller: _controllerLocationPost,
+                      controller: _controllerLocationParty,
                     ),
                   ),
                   Container(
                     child: ButtonOrange(
-                      titleButton: fullSize ? 'Loading...' : 'Add Post',
+                      titleButton: 'Next',
                       onPressed: () {
-                        if(!fullSize){
-                          print('ANTES fullSize ${fullSize}');
-                          print('entrooooooooo');
-                          fullSize = !fullSize;
-                          print('DESPUES fullSize ${fullSize}');
-                          String uid;
-                          String path;
-                          userBloc.currentUser().then((User user) => {
-                            if (user != null)
-                              {
-                                uid = user.uid,
-                                path = "${uid}/${DateTime.now().toString()}.jpg",
-                                //1. Firebase Storage
-                                userBloc.uploadFile(path, widget.image).then((StorageUploadTask storageUploadTask){
-                                  storageUploadTask.onComplete.then((StorageTaskSnapshot snapshot){
-                                    snapshot.ref.getDownloadURL().then((urlImage){
-                                      print('URL_IMAGE: ${urlImage}');
-                                      //2. Cloud Firestore
-                                      userBloc.updatePostData(PostModel(
-                                        description: _controllerDescriptionPost.text,
-                                        location: _controllerLocationPost.text,
-                                        V_I : urlImage,
-                                        likes: 0,
-                                        status: true,
-                                        dateTimeid: DateTime.now().toString(),
-                                      )).whenComplete(() {
-                                        print('Proceso terminado');
-                                        Navigator.pop(context);
-                                      });
-
-                                    });
-                                  });
-                                })
-                              }
-                          });
-                        }else{
-                          print('Solo presione una vez el boton de subir foto maldito malparido :)');
-                          Text('Cargando Imagen');
-                        }
-                        print('se presionó -> Subir post ');
+                        Navigator.push(context,
+                            MaterialPageRoute(builder: (BuildContext context) => AddPartyScreen2(image: widget.image,controllerTitleParty: _controllerTitleParty.text,controllerDescriptionParty: _controllerDescriptionParty.text,controllerLocationParty: _controllerLocationParty.text
+                            )));
                       },
-                      width: 230,
+                      //width: 5,
                       height: 70,
                     ),
                   )

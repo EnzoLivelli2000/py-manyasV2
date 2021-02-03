@@ -6,6 +6,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:manyas_v2/Party/model/party_model.dart';
 import 'package:manyas_v2/Post/model/post_model.dart';
 import 'package:manyas_v2/Post/repository/firebase_storage_repository.dart';
 import 'package:manyas_v2/Post/ui/widgets/post_design.dart';
@@ -143,6 +144,12 @@ class UserBloc implements Bloc {
   Future<bool> SALVADORALIST(String uID, UserModel userModel) => _cloudFirestoreRepository.SALVADORALIST(uID, userModel);
 
   Future<bool> ColorFollowButton(String CurrentUId, UserModel userModel) async => _cloudFirestoreRepository.ColorFollowButton(CurrentUId, userModel);
+
+
+  /*************************************************************************************************************************************************************************************/
+
+  //Case 6. Subir los datos del Post a Firebase CloudFirestore
+  Future<void> updatePartyData(PartyModel party) => _cloudFirestoreRepository.updatePartyData(party);
 
   @override
   void dispose() {

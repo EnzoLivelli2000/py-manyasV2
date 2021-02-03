@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:manyas_v2/Party/model/party_model.dart';
 import 'package:manyas_v2/Post/model/post_model.dart';
 import 'package:manyas_v2/Post/ui/widgets/post_design.dart';
 import 'package:manyas_v2/Post/ui/widgets/post_friend_design.dart';
@@ -41,4 +42,10 @@ class CloudFirestoreRepository {
   Future<bool> SALVADORALIST(String uID, UserModel userModel) => _cloudFirestoreAPI.SALVADORALIST(uID, userModel);
 
   Future<bool> ColorFollowButton(String CurrentUId, UserModel userModel) async => _cloudFirestoreAPI.ColorFollowButton(CurrentUId, userModel);
+
+
+  /**********************************************************************************************************************************************************************************/
+
+
+  Future<void> updatePartyData(PartyModel party) => _cloudFirestoreAPI.updatePartyData(party);
 }

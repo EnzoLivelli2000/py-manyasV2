@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:manyas_v2/Party/model/party_model.dart';
 import 'package:manyas_v2/Post/model/post_model.dart';
 import 'package:manyas_v2/Post/ui/widgets/post_design.dart';
 import 'package:manyas_v2/Post/ui/widgets/post_friend_design.dart';
@@ -10,6 +11,7 @@ import 'package:manyas_v2/User/ui/widgets/search_people_widget.dart';
 class CloudFirestoreAPI {
   final String USERS = 'users';
   final String POSTS = 'posts';
+  final String PARTIES = 'parties';
 
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -100,40 +102,35 @@ class CloudFirestoreAPI {
 
   Future<void> deletePost(PostModel postModel) async {
     String uid = await _auth.currentUser.uid;
-    QuerySnapshot querySnapshot =
-    await Firestore.instance.collection(POSTS).getDocuments();
+    QuerySnapshot querySnapshot = await Firestore.instance.collection(POSTS).getDocuments();
     print('querySnapshot : ${querySnapshot}');
     //var postToDelete = querySnapshot.documents.where((element) => element.data()['pid'] == postModel.pid);
-    for (int i = 0; i < querySnapshot.documents.length; i++) {
-      var a = querySnapshot.documents[i];
-      print(
-          'Firebase: ${a.data()['dateTimeid']}  PostModel: ${postModel
-              .dateTimeid}');
-      if (a.data()['dateTimeid'] == postModel.dateTimeid) {
-        CollectionReference postRef = _db.collection(POSTS);
-        await postRef
-            .doc(a.data()['pid'])
-            .delete()
-            .then((value) => print('se borró el post en la collection POSTS'))
-            .catchError((onError) =>
-            print(
-                'Error al borrar el post, cloudFirebase API: ${onError}'));
-        DocumentReference refUsers = _db.collection(USERS).doc(uid);
-        await refUsers
-            .updateData({
-          'myPosts': FieldValue.arrayRemove(
-              [_db.doc('${USERS}/${a.data()['pid']}')]),
-        })
-            .then((value) =>
-            print(
-                'se borró el post -> (${a
-                    .data()['pid']}) en la lista de usuario -> (${refUsers
-                    .id})'))
-            .catchError((onError) => print('Error ${onError}'));
-      } else {
-        print('no se encontró el post que desea borrar');
-      }
-    }
+
+    Iterable<QueryDocumentSnapshot> aux = querySnapshot.documents.where((element) {return element.id.contains(postModel.pid);});
+    print('xrp PUMP :( : ${aux.isEmpty}');
+
+    aux.forEach((element) async {
+      final String pid = element.data()['pid'];
+      CollectionReference postRef = _db.collection(POSTS);
+      DocumentReference refUsers = _db.collection(USERS).doc(uid);
+
+      print('pid xrp ${pid}');
+
+      await postRef
+          .doc(pid)
+          .delete()
+          .then((value) => print('se borró el post en la collection POSTS'))
+          .catchError((onError) =>
+          print(
+              'Error al borrar el post, cloudFirebase API: ${onError}'));
+
+      await refUsers
+          .updateData({
+        'myPosts': FieldValue.arrayRemove([_db.doc('${POSTS}/${pid}')]),
+      }).then((value) =>
+          print('se borró el post -> (${pid}) en la lista de usuario -> (${refUsers.id})'))
+          .catchError((onError) => print('Error ${onError}'));
+    });
   }
 
   List<SearchPeopleWidget> filterAllUsers(
@@ -503,5 +500,43 @@ class CloudFirestoreAPI {
     DocumentSnapshot documentSnapshot = await refPosts.get();
 
     return documentSnapshot.data()['likes'];
+  }
+
+
+  /**********************************************************************************************************************************************************************************/
+
+
+  Future<void> updatePartyData(PartyModel party) async {
+    CollectionReference refPosts = _db.collection(PARTIES);
+
+    String uid = await _auth.currentUser.uid;
+
+    await refPosts.add({
+      'dateTimeNow': party.dateTimeNow,
+      'Partydate': party.Partydate,
+      'Partylocation': party.Partylocation,
+      'PartyTime': party.PartyTime,
+      'title': party.title,
+      'description': party.description,
+      'urlImage': party.V_I,
+      'Userlocation': 'Esto aún tengo que arreglar',
+      'price': party.price,
+      'isAdult' : party.isAdult,
+      'userOwner': _db.doc('${USERS}/${uid}'), //este dato se carga al añadir este documento a la colección
+      'status': party.status,
+      'likes': party.likes,
+    }).then((DocumentReference dr) {
+      dr.get().then((DocumentSnapshot snapshot) {
+        DocumentReference refUsers = _db.collection(USERS).doc(uid);
+        refUsers.updateData({
+          'myParties':
+          FieldValue.arrayUnion([_db.doc('${PARTIES}/${snapshot.id}')]),
+        });
+        DocumentReference partyUpdate = _db.collection(PARTIES).doc(snapshot.id);
+        partyUpdate.updateData({
+          'pid': snapshot.id,
+        });
+      });
+    });
   }
 }
