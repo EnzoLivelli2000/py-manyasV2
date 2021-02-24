@@ -1,0 +1,15 @@
+[33mdbbd17f[m[33m ([m[1;36mHEAD -> [m[1;32mRicardoMarkiewicz[m[33m)[m Aplicamos lo que vimos en el canal de youtube de RicardoMarkiewicz
+[33m012e82f[m[33m ([m[1;31morigin/master[m[33m, [m[1;32mmaster[m[33m)[m se acabó la primera etapa, me realizó los siguientes cambios Se creo el diseño de PartyPost Se realizó la lógica de subida de post a firebase
+[33mdb7d89d[m Se arreglo lo siguiente El boton de addPost se bloqueará cuando el usuario lo haya precionado una vez
+[33m7c1ac92[m Se actualizo No debo poder seguirme Ordenar mis postList Mejora en el BotónLike
+[33m4bdd112[m se hizó la lógica completa del boton de like, pero hay errores, se intentará resolver
+[33m3311e6a[m Se agregó la lógica al boton de like con un API, pero solucionar el problema de color al precionar el like
+[33ma85925a[m los posts ahora se muestran por fecha de creación y se arreglo en bug de image.path == null, y algunas cuestiones estéticas
+[33m67b5ff9[m se actulizó el diseño de ScreenSearch y las stories en HomeScreen
+[33m1c36f0e[m se atualizó el diseño de las storie y el home
+[33m1eb3c50[m se actualizo el stream de los posts de los followers de cada usuario y se empezo a trabajar el diseño de los stories
+[33m6a0cf0c[m El buscador ya cumple con su función, solo hay q mejorar estética
+[33mbbd8583[m ya se puede borrar un post. Tengo el error x-firebase, pero la aplicación eventualmente funciona
+[33m2b168a2[m authentication temperamental, ya se suben post y se visualizan en el perfil del usuario. Hay que arreglar la vista previa de la foto en add_post_screen
+[33mf7eafca[m se agrego API bloc_provider, user_bloc.dart, auth_repository.dart, cloud_firebase_api.dart, cloud_firebase_repository.dart y Firebase_auth_api.dart. lo guarde por q me mandaron a comprar pan
+[33m91d7f13[m login UX y homeProfileUser UX e intagracion con firebase(acompañando a mama a la clinica)
