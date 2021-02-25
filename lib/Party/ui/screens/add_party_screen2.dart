@@ -24,16 +24,18 @@ class AddPartyScreen2 extends StatefulWidget {
   File image;
   String controllerTitleParty;
   String controllerDescriptionParty;
-  bool fullSize = false;
+
+  //bool fullSize = false;
   var partyNumber;
   GeoPoint target; //ESTO VIENE A SER LOCATION PARTY
 
-  AddPartyScreen2({Key key,
-    @required this.image,
-    @required this.controllerTitleParty,
-    @required this.controllerDescriptionParty,
-    @required this.partyNumber,
-    @required this.target});
+  AddPartyScreen2(
+      {Key key,
+      @required this.image,
+      @required this.controllerTitleParty,
+      @required this.controllerDescriptionParty,
+      @required this.partyNumber,
+      @required this.target});
 
   @override
   _AddPartyScreen2State createState() => _AddPartyScreen2State();
@@ -44,7 +46,8 @@ class _AddPartyScreen2State extends State<AddPartyScreen2> {
   final _controllerTimesParty = TextEditingController();
   final _controllerPriceParty = TextEditingController();
   bool _controllerIsAdultPost = false;
-  bool fullSize = false;
+  bool onlyOneClick = false;
+  ValueNotifier valueNotifier = ValueNotifier('Add a Party');
 
   @override
   Widget build(BuildContext context) {
@@ -156,69 +159,99 @@ class _AddPartyScreen2State extends State<AddPartyScreen2> {
                         ],
                       )),
                   Container(
-                    child: ButtonOrange(
-                      titleButton: fullSize ? 'Loading...' : 'Add Party',
-                      onPressed: () {
-                        if(!fullSize){
-                          print('ANTES fullSize ${fullSize}');
-                          print('entrooooooooo');
-                          fullSize = !fullSize;
-                          print('DESPUES fullSize ${fullSize}');
-                          String uid;
-                          String path;
-                          userBloc.currentUser().then((User user) => {
-                            if (user != null)
-                              {
-                                uid = user.uid,
-                                path = "${uid}/${DateTime.now().toString()}.jpg",
-                                //1. Firebase Storage
-                                userBloc.uploadFile(path, widget.image).then((StorageUploadTask storageUploadTask){
-                                  storageUploadTask.onComplete.then((StorageTaskSnapshot snapshot){
-                                    snapshot.ref.getDownloadURL().then((urlImage){
-                                      print('URL_IMAGE: ${urlImage}');
-                                      //2. Cloud Firestore
-                                      userBloc.updatePartyData(PartyModel(
-                                          dateTimeNow: DateTime.now().toString(),
-                                          Partydate: _controllerDateParty.text,
-                                          PartyTime: _controllerTimesParty.text,
-                                          title: widget.controllerTitleParty,
-                                          description: widget.controllerDescriptionParty,
-                                          V_I: urlImage,
-                                          Userlocation: 'esto hay que ver aún',
-                                          price: _controllerPriceParty.text,
-                                          isAdult: _controllerIsAdultPost,
-                                          likes: 0,
-                                          status: true,
-                                      ), widget.partyNumber,
-                                      widget.target).whenComplete(() {
-                                        print('Proceso terminado');
-                                        Navigator.push(context,
-                                            MaterialPageRoute(builder: (BuildContext context) {
-                                              return CupertinoTabView(
-                                                  builder: (BuildContext context){
-                                                    return BlocProvider<UserBloc>(
-                                                      creator:(_context, _bag) =>UserBloc(),
-                                                      child: ProfileScreen(),
-                                                    );
-                                                  }
-                                              );
-                                            },
-                                            ));
-                                      });
-
-                                    });
+                    child: ValueListenableBuilder(
+                      valueListenable: valueNotifier,
+                      builder: (context, value, child) {
+                        return ButtonOrange(
+                          titleButton: value,
+                          onPressed: () {
+                            if (!onlyOneClick) {
+                              valueNotifier.value = ' Loading ...';
+                              String uid;
+                              String path;
+                              userBloc.currentUser().then((User user) => {
+                                    if (user != null)
+                                      {
+                                        uid = user.uid,
+                                        path =
+                                            "${uid}/${DateTime.now().toString()}.jpg",
+                                        //1. Firebase Storage
+                                        userBloc
+                                            .uploadFile(path, widget.image)
+                                            .then((StorageUploadTask
+                                                storageUploadTask) {
+                                          storageUploadTask.onComplete.then(
+                                              (StorageTaskSnapshot snapshot) {
+                                            snapshot.ref
+                                                .getDownloadURL()
+                                                .then((urlImage) {
+                                              print('URL_IMAGE: ${urlImage}');
+                                              //2. Cloud Firestore
+                                              userBloc
+                                                  .updatePartyData(
+                                                      PartyModel(
+                                                        dateTimeNow:
+                                                            DateTime.now()
+                                                                .toString(),
+                                                        Partydate:
+                                                            _controllerDateParty
+                                                                .text,
+                                                        PartyTime:
+                                                            _controllerTimesParty
+                                                                .text,
+                                                        title: widget
+                                                            .controllerTitleParty,
+                                                        description: widget
+                                                            .controllerDescriptionParty,
+                                                        V_I: urlImage,
+                                                        Userlocation:
+                                                            'esto hay que ver aún',
+                                                        price:
+                                                            _controllerPriceParty
+                                                                .text,
+                                                        isAdult:
+                                                            _controllerIsAdultPost,
+                                                        likes: 0,
+                                                        status: true,
+                                                      ),
+                                                      widget.partyNumber,
+                                                      widget.target)
+                                                  .whenComplete(() {
+                                                print('Proceso terminado');
+                                                Navigator.push(context,
+                                                    MaterialPageRoute(
+                                                  builder:
+                                                      (BuildContext context) {
+                                                    return CupertinoTabView(
+                                                        builder: (BuildContext
+                                                            context) {
+                                                      return BlocProvider<
+                                                          UserBloc>(
+                                                        creator:
+                                                            (_context, _bag) =>
+                                                                UserBloc(),
+                                                        child: ProfileScreen(),
+                                                      );
+                                                    });
+                                                  },
+                                                ));
+                                              });
+                                            });
+                                          });
+                                        })
+                                      }
                                   });
-                                })
-                              }
-                          });
-                        }else{
-                          print('Solo presione una vez el boton de subir foto maldito malparido :)');
-                          Text('Cargando Imagen');
-                        }
-                        print('se presionó -> Subir post ');
+                            } else {
+                              print(
+                                  'Solo presione una vez el boton de subir foto maldito malparido :)');
+                              Text('Cargando Imagen');
+                            }
+                            print('se presionó -> Subir post ');
+                          },
+                          width: 70,
+                          height: 70,
+                        );
                       },
-                      width: 70,
-                      height: 70,
                     ),
                   )
                 ],

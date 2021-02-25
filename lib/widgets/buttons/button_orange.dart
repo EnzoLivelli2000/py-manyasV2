@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
 class ButtonOrange extends StatefulWidget {
-  final String titleButton;
+  String titleButton;
   double width = 0.0;
   double height = 0.0;
   final VoidCallback onPressed;
 
-  ButtonOrange({Key key, @required this.titleButton, @required this.onPressed, this.width, this.height});
+  ButtonOrange({Key key, this.titleButton, @required this.onPressed, this.width, this.height});
 
   @override
   _ButtonOrangeState createState() => _ButtonOrangeState();
@@ -15,6 +15,7 @@ class ButtonOrange extends StatefulWidget {
 class _ButtonOrangeState extends State<ButtonOrange> {
   @override
   Widget build(BuildContext context) {
+    //print('titleButtoooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooon ${widget.titleButton}');
     return InkWell(
       onTap: widget.onPressed,
       child: Container(

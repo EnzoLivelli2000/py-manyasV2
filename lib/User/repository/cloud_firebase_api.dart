@@ -27,7 +27,8 @@ class CloudFirestoreAPI {
       'email': user.email,
       'photoURL': user.photoURL,
       'lastSignIn': DateTime.now(),
-      'lengthFollowers': user.followers
+      'myFriends': [],
+      'myFollowers': []
     });
   }
 
