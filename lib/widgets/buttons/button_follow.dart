@@ -6,10 +6,10 @@ import 'package:manyas_v2/widgets/buttons/button_x.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebaseAuth;
 
 class FollowButton extends StatefulWidget {
-  bool colorFollowButton;
+
   UserModel userModel;
 
-  FollowButton({Key key, this.userModel, this.colorFollowButton});
+  FollowButton({Key key, this.userModel});
 
   @override
   _FollowButtonState createState() => _FollowButtonState();
@@ -18,6 +18,7 @@ class FollowButton extends StatefulWidget {
 class _FollowButtonState extends State<FollowButton> {
   UserBloc userBloc;
   bool isFollowedX = false;
+  bool colorFollowButton = false;
 
   _asyncColorFollowButton() async {
     String uidCurrentUser = await firebaseAuth.FirebaseAuth.instance.currentUser.uid;
@@ -27,13 +28,13 @@ class _FollowButtonState extends State<FollowButton> {
     if (aux == null) {
       if (mounted) {
         setState(() {
-      widget.colorFollowButton = false;
+          colorFollowButton = false;
         });
       }
     } else {
       if (mounted) {
         setState(() {
-      widget.colorFollowButton = aux;
+          colorFollowButton = aux;
         });
       }
     }
@@ -67,14 +68,14 @@ class _FollowButtonState extends State<FollowButton> {
       child: ButtonX(
         onPressed: () async{
           print('se presionó el nuevo botón de FOLLOW');
-          await onFollowButtonTapped(isFollowedX, widget.userModel, widget.colorFollowButton, userBloc);
+          await onFollowButtonTapped(isFollowedX, widget.userModel, colorFollowButton, userBloc);
           getColorFollowButton();
-          print('El valor de like (SALIDA) ${widget.colorFollowButton}');
+          print('El valor de like (SALIDA) ${colorFollowButton}');
         },
         titleButton: 'follow',
         height: 30,
         width: 90,
-        buttonColor: widget.colorFollowButton == false ? Color(0xFF3EF850):Colors.grey,
+        buttonColor: colorFollowButton == false ? Color(0xFF3EF850):Colors.grey,
       ),
     );
   }

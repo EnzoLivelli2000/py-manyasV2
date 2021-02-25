@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:manyas_v2/Post/ui/widgets/floating_action_button_green.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
@@ -28,6 +30,8 @@ class CardImageWithFabIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     // TODO: implement build
 
+    print('pathImage ${pathImage}');
+
     final card = Container(
       height: height,
       width: width,
@@ -38,8 +42,8 @@ class CardImageWithFabIcon extends StatelessWidget {
       decoration: BoxDecoration(
           image: DecorationImage(
               fit: BoxFit.cover,
-              image: internet?CachedNetworkImageProvider(pathImage):AssetImage(pathImage)
-          ),
+              image: pathImage.contains('assets')? AssetImage(pathImage):new FileImage(new File(pathImage))),
+              //image: internet?CachedNetworkImageProvider(pathImage):AssetImage(pathImage)
           borderRadius: BorderRadius.all(Radius.circular(10.0)),
           shape: BoxShape.rectangle,
           boxShadow: <BoxShadow>[

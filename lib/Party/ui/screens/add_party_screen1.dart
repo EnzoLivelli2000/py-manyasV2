@@ -10,6 +10,7 @@ import 'package:manyas_v2/Post/model/post_model.dart';
 import 'package:manyas_v2/Post/ui/widgets/card_image.dart';
 import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/widgets/background1.dart';
+import 'package:manyas_v2/widgets/input_location.dart';
 import 'file:///C:/Users/USUARIO/AndroidStudioProjects/py-manyas-RicardoMarkiewicz/lib/widgets/buttons/button_orange.dart';
 import 'package:manyas_v2/widgets/text_input.dart';
 import 'package:manyas_v2/widgets/title_header.dart';
@@ -108,48 +109,28 @@ class _AddPartyScreen1State extends State<AddPartyScreen1> {
                         controller: _controllerDescriptionParty,
                         textLimiting: 155,
                       )),
-                  GestureDetector(
-                    onTap: () {
-                      print('esta entrando en el mapa');
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => BlocProvider<UserBloc>(
-                              creator:(_context, _bag) =>UserBloc(),
-                                  child:CreatePartyScreen(
-                                    image: widget.image,
-                                    controllerTitleParty: _controllerTitleParty.text,
-                                    controllerDescriptionParty: _controllerDescriptionParty.text,
+                  Container(
+                    margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
+                    child: InputLocation(
+                        hintText: 'Add your party location',
+                        iconData: Icons.add_location_alt,
+                        //controller: controller,
+                        onPressed: (){
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (BuildContext context) => BlocProvider<UserBloc>(
+                                      creator:(_context, _bag) =>UserBloc(),
+                                      child:CreatePartyScreen(
+                                        image: widget.image,
+                                        controllerTitleParty: _controllerTitleParty.text,
+                                        controllerDescriptionParty: _controllerDescriptionParty.text,
+                                      )
                                   )
-                          )
-                      ));
-                    },
-                    child: Container(
-                      margin: EdgeInsets.only(top: 10.0, bottom: 10.0),
-                      decoration: BoxDecoration(
-                          boxShadow: <BoxShadow>[
-                            BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 15,
-                                offset: Offset(0,7)
-                            )
-                          ]
-                      ),
-                      child: Row(
-                        children: [
-                          Container(
-                            margin: EdgeInsets.only(top: 10.0),
-                              child: Text(
-                                  'Add your party location',
-                              )
-                            ),
-                          Icon(
-                            Icons.location_on,
-                          )
-                        ],
-                      ),
+                              ));
+                        }
                     ),
-                  ),
+                  )
                   /*Container( // ESTO CREO QUE LO BORRARÉ
                     child: ButtonOrange(
                       titleButton: 'Next',

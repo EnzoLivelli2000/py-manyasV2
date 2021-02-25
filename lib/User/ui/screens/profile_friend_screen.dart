@@ -22,7 +22,7 @@ class ProfileFriendScreen extends StatefulWidget {
 class _ProfileFriendScreenState extends State<ProfileFriendScreen> {
   int indexTap = 0;
   UserBloc userBloc;
-  bool colorFollowButton = false;
+
 
 
   @override
@@ -50,7 +50,7 @@ class _ProfileFriendScreenState extends State<ProfileFriendScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              FollowButton(userModel: widget.userModel, colorFollowButton: colorFollowButton),
+              FollowButton(userModel: widget.userModel),
               messageButton(widget.userModel),
             ],
           ),
