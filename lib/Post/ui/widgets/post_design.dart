@@ -25,39 +25,41 @@ class _PostDesignState extends State<PostDesign> {
   bool isLikedX = false;
   final String POSTS = 'posts';
 
-  Future<bool> onLikeButtonTapped(bool isLiked) async{
+  Future<bool> onLikeButtonTapped(bool isLiked) async {
     print('se presionó el botón de like ${isLiked}');
     print('widget.postModel.pid ${widget.postModel.pid}');
     String uidCurrentUser = await FirebaseAuth.instance.currentUser.uid;
 
-    await userBloc.updateLikeData(POSTS, widget.postModel.pid, isLiked, uidCurrentUser);
+    await userBloc.updateLikeData(
+        POSTS, widget.postModel.pid, isLiked, uidCurrentUser);
 
     return !isLiked;
   }
 
-  bool getColorLikeButton(){
+  bool getColorLikeButton() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _asyncColorLikeButton();
     });
   }
 
-  void getLengthLike(){
+  void getLengthLike() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _asyncLengthLike();
     });
   }
 
-  _asyncColorLikeButton() async{
+  _asyncColorLikeButton() async {
     String uidCurrentUser = await FirebaseAuth.instance.currentUser.uid;
-    bool aux = await userBloc.ColorLikeButton(POSTS, widget.postModel.pid, uidCurrentUser);
+    bool aux = await userBloc.ColorLikeButton(
+        POSTS, widget.postModel.pid, uidCurrentUser);
 
-    if(aux == null){
+    if (aux == null) {
       if (mounted) {
         setState(() {
           colorLikeButton = false;
         });
       }
-    }else{
+    } else {
       if (mounted) {
         setState(() {
           colorLikeButton = aux;
@@ -66,14 +68,13 @@ class _PostDesignState extends State<PostDesign> {
     }
   }
 
-  _asyncLengthLike() async{
+  _asyncLengthLike() async {
     int aux = await userBloc.LengthLikes(POSTS, widget.postModel.pid);
     if (mounted) {
       setState(() {
         countLikes = aux;
       });
     }
-
   }
 
   @override
@@ -95,7 +96,7 @@ class _PostDesignState extends State<PostDesign> {
     );
 
     final userData = Container(
-      margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 15, left: 15),
+      margin: EdgeInsets.only(top: 10.0, bottom: 10.0, left: 15),
       child: Row(
         children: <Widget>[
           Container(
@@ -114,17 +115,20 @@ class _PostDesignState extends State<PostDesign> {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                  //userModel.name.length > 11? '${userModel.name.substring(0,15)} ...': userModel.name,
-                  widget.userModel.name,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 17.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                    fontFamily: 'Lato',
-                    decoration: TextDecoration.none,
-                  )),
+              Container(
+                child: Text(
+                    //userModel.name.length > 11? '${userModel.name.substring(0,15)} ...': userModel.name,
+                    widget.userModel.name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 17.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                      fontFamily: 'Lato',
+                      decoration: TextDecoration.none,
+                    )),
+              ),
               Text('2 days ago',
                   style: TextStyle(
                     fontSize: 12.0,
@@ -160,7 +164,12 @@ class _PostDesignState extends State<PostDesign> {
           Row(
             children: [
               IconButton(
-                icon: Icon(Icons.favorite,  color: colorLikeButton != false ?Color(0xFFF87125):Colors.grey,),
+                icon: Icon(
+                  Icons.favorite,
+                  color: colorLikeButton != false
+                      ? Color(0xFFF87125)
+                      : Colors.grey,
+                ),
                 onPressed: () async {
                   print('se presionó el nuevo botón de LIKE');
                   await onLikeButtonTapped(isLikedX);
@@ -187,20 +196,25 @@ class _PostDesignState extends State<PostDesign> {
     //enum SettingOptions{userBloc.deletePost(Po)}
 
     final popUpMenuOption = Container(
-        margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 15, left: 15),
+        margin: EdgeInsets.only(bottom:10),
         child: IconButton(
-          icon: Icon(Icons.clear,color: Color(0xFFFF0000),),
-          onPressed: () async {
-            print('se presionó: borrar post');
-            await userBloc
-                .deletePost(widget.postModel)
-                .then((value) =>
-                    ('se borró de manera exitosa el post selecionado '))
-                .catchError((onError) {
-              print('Error al borrar el post ${onError}');
-            });
-          },
-        ));
+      icon: Icon(
+        Icons.clear,
+        color: Color(0xFFFF0000),
+        size: 15,
+      ),
+      onPressed: () async {
+        print('se presionó: borrar post');
+        await userBloc
+            .deletePost(widget.postModel)
+            .then(
+                (value) => ('se borró de manera exitosa el post selecionado '))
+            .catchError((onError) {
+          print('Error al borrar el post ${onError}');
+        });
+        await userBloc.deleteFile(widget.postModel.V_I);
+      },
+    ));
 
     return Container(
       margin: EdgeInsets.only(top: 30.0, bottom: 10.0, right: 15, left: 15),
@@ -220,7 +234,10 @@ class _PostDesignState extends State<PostDesign> {
         children: <Widget>[
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [userData, popUpMenuOption],
+            children: [
+              userData,
+              Expanded(child: popUpMenuOption)
+            ],
           ),
           photoCard,
           contentPost,

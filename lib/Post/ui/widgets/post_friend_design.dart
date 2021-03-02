@@ -215,7 +215,7 @@ class _PostFriendDesignState extends State<PostFriendDesign> {
         children: <Widget>[
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [userData],
+            children: [Expanded(child: userData)],
           ),
           photoCard,
           contentPost,

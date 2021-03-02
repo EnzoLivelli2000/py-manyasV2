@@ -98,8 +98,6 @@ class _UserInfoState extends State<UserInfo> {
                 child: Text(
                     widget.userModel.name,
                     maxLines: 1,
-                    //softWrap: false,
-                    overflow: TextOverflow.fade,
                     style: TextStyle(
                       fontSize: 19.0,
                       fontWeight: FontWeight.bold,
@@ -109,19 +107,22 @@ class _UserInfoState extends State<UserInfo> {
                     )
                 ),
           ),
-        Text(
-            widget.userModel.email,
-            style: TextStyle(
-                fontSize: 15.0,
-                color: Colors.black26,
-                fontFamily: 'Lato',
-                decoration: TextDecoration.none,
-            )
+        Container(
+          margin: EdgeInsets.only(bottom: 5),
+          child: Text(
+              widget.userModel.email,
+              style: TextStyle(
+                  fontSize: 15.0,
+                  color: Colors.black26,
+                  fontFamily: 'Lato',
+                  decoration: TextDecoration.none,
+              )
+          ),
         ),
-        Padding(
-          padding: const EdgeInsets.only(top: 5),
+        Container(
+          //padding: const EdgeInsets.only(top: 5),
           child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            //mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
               Container(
                 margin: EdgeInsets.only(right: 4),
@@ -162,7 +163,7 @@ class _UserInfoState extends State<UserInfo> {
       child: Row(
         children: <Widget>[
           userPhoto,
-          userInfo,
+          Expanded(child: userInfo),
         ],
       ),
     );

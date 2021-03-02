@@ -60,6 +60,9 @@ class UserBloc implements Bloc {
   Future<StorageUploadTask> uploadFile(String path, File image) =>
       _firebaseStorageRepository.uploadFile(path, image);
 
+  Future<StorageUploadTask> deleteFile(String path) =>
+      _firebaseStorageRepository.deleteFile(path);
+
   //Case 6. Subir los datos del Post a Firebase CloudFirestore
   Future<void> updatePostData(PostModel post) =>
       _cloudFirestoreRepository.updatePostData(post);

@@ -118,7 +118,7 @@ class _PartyDesignState extends State<PartyDesign> {
     userBloc = BlocProvider.of<UserBloc>(context);
 
     final userData = Container(
-      margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 15, left: 15),
+      margin: EdgeInsets.only(top: 10.0, bottom: 10.0, left: 15),
       child: Row(
         children: <Widget>[
           Container(
@@ -163,15 +163,17 @@ class _PartyDesignState extends State<PartyDesign> {
     );
 
     final popUpMenuOption = Container(
-        margin: EdgeInsets.only(top: 10.0, bottom: 10.0, right: 15, left: 15),
+        margin: EdgeInsets.only(bottom: 10),
         child: IconButton(
           icon: Icon(
             Icons.clear,
             color: Color(0xFFFF0000),
+            size: 15,
           ),
           onPressed: () async {
             print('se presionó: borrar post');
             await userBloc.deleteParty(widget.partyModel).then((value) =>('se borró de manera exitosa el post selecionado ')).catchError((onError) {print('Error al borrar el post ${onError}');});
+            await userBloc.deleteFile(widget.partyModel.V_I);
           },
         ));
 
@@ -194,7 +196,7 @@ class _PartyDesignState extends State<PartyDesign> {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [userData, popUpMenuOption],
+              children: [Expanded(flex: 5,child: userData), Expanded(flex: 1,child:popUpMenuOption)],
             ),
             Container(
               margin: EdgeInsets.only(left: 15, top: 110, right: 25),

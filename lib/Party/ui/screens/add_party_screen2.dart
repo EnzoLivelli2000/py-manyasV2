@@ -167,6 +167,7 @@ class _AddPartyScreen2State extends State<AddPartyScreen2> {
                           onPressed: () {
                             if (!onlyOneClick) {
                               valueNotifier.value = ' Loading ...';
+                              onlyOneClick = !onlyOneClick;
                               String uid;
                               String path;
                               userBloc.currentUser().then((User user) => {
