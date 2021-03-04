@@ -18,17 +18,25 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
-
   @override
   Widget build(BuildContext context) {
     UserBloc userBloc = BlocProvider.of(context);
+    final query = MediaQuery.of(context);
+
     return StreamBuilder(
       stream: userBloc.authStatus,
-      builder: (BuildContext context, AsyncSnapshot snapshot){
-        if(!snapshot.hasData || snapshot.hasError){
-          return signInGoogleUI(userBloc);
-        }else{
-          return ButtonNavigationBarPrincipalMenu();
+      builder: (BuildContext context, AsyncSnapshot snapshot) {
+        if (!snapshot.hasData || snapshot.hasError) {
+          return MediaQuery(
+            data: query.copyWith(
+                textScaleFactor: query.textScaleFactor.clamp(0.8, 1.0)),
+            child: signInGoogleUI(userBloc),);
+        } else {
+          return MediaQuery(
+            data: query.copyWith(
+                textScaleFactor: query.textScaleFactor.clamp(0.8, 1.0)),
+            child: ButtonNavigationBarPrincipalMenu(),
+          );
         }
       },
     );
@@ -40,34 +48,35 @@ class _LoginScreenState extends State<LoginScreen> {
         children: <Widget>[
           Background1(),
           ListView(children: <Widget>[
-            Container(
-              margin: EdgeInsets.only(top: 50, bottom: 50),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Text(
-                    'Get Started',
-                    style: TextStyle(
-                      fontFamily: 'Lato',
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 35,
-                      decoration: TextDecoration.none,
+              Container(
+                margin: EdgeInsets.only(top: 50, bottom: 50),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  //crossAxisAlignment: CrossAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      'Get Started',
+                      style: TextStyle(
+                        fontFamily: 'Lato',
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 33,
+                        decoration: TextDecoration.none,
+                      ),
                     ),
-                  ),
-                  Text(
-                    'Start with signing up or sign in',
-                    style: TextStyle(
-                      fontFamily: 'Lato',
-                      color: Color(0xFFFFEDE6),
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                      decoration: TextDecoration.none,
+                    Text(
+                      'Start with signing up or sign in',
+                      style: TextStyle(
+                        fontFamily: 'Lato',
+                        color: Color(0xFFFFEDE6),
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                        decoration: TextDecoration.none,
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
             Center(
               child: Container(
                 child: Image(
@@ -85,39 +94,47 @@ class _LoginScreenState extends State<LoginScreen> {
                       print('se presionó -> Sign in with Google ');
                       await userBloc.signIn().then((UserCredential userC) {
                         userBloc.updateUserData(UserModel(
-                          uid: userC.user.uid,
-                          name: userC.user.displayName,
-                          email: userC.user.email,
-                          photoURL: userC.user.photoURL,
-                          followers: 0
-                        ));
-                        Navigator.push(context,
-                            MaterialPageRoute(builder: (BuildContext context) => ButtonNavigationBarPrincipalMenu()));
-                      }
-                      ).catchError((e) => print('El error al hacer Sign in with Google -> ${e.toString()}'));
+                            uid: userC.user.uid,
+                            name: userC.user.displayName,
+                            email: userC.user.email,
+                            photoURL: userC.user.photoURL,
+                            ));
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (BuildContext context) =>
+                                    ButtonNavigationBarPrincipalMenu()));
+                      }).catchError((e) =>
+                          print(
+                              'El error al hacer Sign in with Google -> ${e
+                                  .toString()}'));
                     },
                     width: 230,
                     height: 70,
                   ),
                   ButtonWhite(
-                    titleButton:'Sign up',
-                    onPressed: (){
+                    titleButton: 'Sign up',
+                    onPressed: () {
                       print('se presionó -> Sign up ');
-                      Navigator.push(context,
-                          MaterialPageRoute(builder: (BuildContext context) => LoginScreenWithEmailPassword()));
-                      },
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (BuildContext context) =>
+                                  LoginScreenWithEmailPassword()));
+                    },
                     width: 230,
                     height: 70,
                   ),
                   Container(
-                    padding: EdgeInsets.only(top: 90),
+                    padding: EdgeInsets.only(top: 60),
+                    //margin: EdgeInsets.only(top: 60),
                     child: Text(
                       'Forgot your account ?',
                       style: TextStyle(
                         fontFamily: 'Lato',
                         color: Colors.grey,
                         fontWeight: FontWeight.bold,
-                        fontSize: 20,
+                        fontSize: 18,
                         decoration: TextDecoration.none,
                       ),
                     ),

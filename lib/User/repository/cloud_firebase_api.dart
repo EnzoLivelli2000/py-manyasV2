@@ -21,15 +21,20 @@ class CloudFirestoreAPI {
 
   void updateUserData(UserModel user) async {
     DocumentReference ref = _db.collection(USERS).doc(user.uid);
-    return await ref.set({
-      'uid': user.uid,
-      'name': user.name,
-      'email': user.email,
-      'photoURL': user.photoURL,
-      'lastSignIn': DateTime.now(),
-      'myFriends': [],
-      'myFollowers': []
-    });
+    DocumentSnapshot documentSnapshot = await ref.get();
+    if(documentSnapshot.data()['uid'] != null || documentSnapshot.data()['uid'] != '') {
+      return await ref.update({
+        'lastSignIn': DateTime.now(),
+      });
+    }else{
+      return await ref.set({
+        'uid': user.uid,
+        'name': user.name,
+        'email': user.email,
+        'photoURL': user.photoURL,
+        'lastSignIn': DateTime.now(),
+      });
+    }
   }
 
   Future<void> updatePostData(PostModel post) async {
@@ -281,8 +286,12 @@ class CloudFirestoreAPI {
         return false;
       }
     }else{
-      print('ocurrio un error al presionasr el botn de follow');
-      return null;
+      refUser.update({
+        'myFriends': [],
+        'myFollowers': []
+      });
+      print('Se creo en la base de datos un par de listas de myFriends y myFollowers de este usuario');
+      return true;
     }
   }
 

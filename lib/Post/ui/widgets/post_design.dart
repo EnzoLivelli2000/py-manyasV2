@@ -112,32 +112,34 @@ class _PostDesignState extends State<PostDesign> {
                   //image: AssetImage('assets/images/post_photo.PNG')
                 )),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Container(
-                child: Text(
-                    //userModel.name.length > 11? '${userModel.name.substring(0,15)} ...': userModel.name,
-                    widget.userModel.name,
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  child: Text(
+                      //userModel.name.length > 11? '${userModel.name.substring(0,15)} ...': userModel.name,
+                      widget.userModel.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: TextStyle(
+                        fontSize: 15.0,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                        fontFamily: 'Lato',
+                        decoration: TextDecoration.none,
+                      )),
+                ),
+                Text('2 days ago',
                     style: TextStyle(
-                      fontSize: 17.0,
+                      fontSize: 12.0,
                       fontWeight: FontWeight.bold,
-                      color: Colors.black,
+                      color: Colors.black26,
                       fontFamily: 'Lato',
                       decoration: TextDecoration.none,
                     )),
-              ),
-              Text('2 days ago',
-                  style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black26,
-                    fontFamily: 'Lato',
-                    decoration: TextDecoration.none,
-                  )),
-            ],
+              ],
+            ),
           )
         ],
       ),
@@ -178,17 +180,18 @@ class _PostDesignState extends State<PostDesign> {
                 },
               ),
               Text('${countLikes}'),
+              IconButton(
+                onPressed: () {
+                  print('se presionó el botón de commnent');
+                },
+                icon: Icon(
+                  Icons.comment,
+                  color: Color(0xFFF87125),
+                ),
+              ),
+              Text('0')
             ],
           ),
-          FlatButton.icon(
-              onPressed: () {
-                print('se presionó el botón de commnent');
-              },
-              icon: Icon(
-                Icons.comment,
-                color: Color(0xFFF87125),
-              ),
-              label: Text('128')),
         ],
       ),
     );
@@ -235,8 +238,8 @@ class _PostDesignState extends State<PostDesign> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              userData,
-              Expanded(child: popUpMenuOption)
+              Expanded(flex: 5,child: userData),
+              Expanded(flex: 1,child: popUpMenuOption)
             ],
           ),
           photoCard,

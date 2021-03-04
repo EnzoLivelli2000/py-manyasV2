@@ -119,7 +119,7 @@ class _PostFriendDesignState extends State<PostFriendDesign> {
                   widget.userModel.name,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 17.0,
+                    fontSize: 15.0,
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                     fontFamily: 'Lato',
@@ -182,17 +182,18 @@ class _PostFriendDesignState extends State<PostFriendDesign> {
                 },
               ),
               Text('${countLikes}'),
+              IconButton(
+                onPressed: (){
+                  print('se presionó el botón de commnent');
+                },
+                icon: Icon(
+                  Icons.comment,
+                  color: Color(0xFFF87125),
+                ),
+              ),
+              Text('0'),
             ],
           ),
-          FlatButton.icon(
-              onPressed: (){
-                print('se presionó el botón de commnent');
-              },
-              icon: Icon(
-                Icons.comment,
-                color: Color(0xFFF87125),
-              ),
-              label: Text('128')),
         ],
       ),
     );

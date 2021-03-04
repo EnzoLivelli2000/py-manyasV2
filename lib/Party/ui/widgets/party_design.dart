@@ -134,29 +134,31 @@ class _PartyDesignState extends State<PartyDesign> {
                   //image: AssetImage('assets/images/post_photo.PNG')
                 )),
           ),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                  widget.userModel.name,
-                  overflow: TextOverflow.ellipsis,
-                  style: TextStyle(
-                    fontSize: 17.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white,
-                    fontFamily: 'Lato',
-                    decoration: TextDecoration.none,
-                  )),
-              Text( widget.partyModel.dateTimeNow.toString()
-                  .substring(0,10),
-                  style: TextStyle(
-                    fontSize: 12.0,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
-                    fontFamily: 'Lato',
-                    decoration: TextDecoration.none,
-                  )),
-            ],
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                    widget.userModel.name,
+                    overflow: TextOverflow.ellipsis,
+                    style: TextStyle(
+                      fontSize: 15.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                      fontFamily: 'Lato',
+                      decoration: TextDecoration.none,
+                    )),
+                Text( widget.partyModel.dateTimeNow.toString()
+                    .substring(0,10),
+                    style: TextStyle(
+                      fontSize: 12.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.grey,
+                      fontFamily: 'Lato',
+                      decoration: TextDecoration.none,
+                    )),
+              ],
+            ),
           )
         ],
       ),
@@ -241,72 +243,76 @@ class _PartyDesignState extends State<PartyDesign> {
         ),
         Row(
           children: [
-            Container(
-                margin: EdgeInsets.only(bottom: 6.0, right: 20, left: 20),
-                //alignment: AlignmentDirectional.bottomStart,
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      children: <Widget>[
-                        Container(
-                          margin: EdgeInsets.only(top:5,bottom:5),
-                          child: Icon(Icons.calendar_today,
-                              color: Colors.grey),
-                        ),
-                        Text(
-                          widget.partyModel.Partydate,
-                          style: TextStyle(
-                            fontSize: 13.0,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.grey,
-                            fontFamily: 'Lato',
-                            decoration: TextDecoration.none,
+            Expanded(
+              child: Container(
+                  margin: EdgeInsets.only(bottom: 6.0, right: 20, left: 20),
+                  //alignment: AlignmentDirectional.bottomStart,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Row(
+                        children: <Widget>[
+                          Container(
+                            margin: EdgeInsets.only(top:5,bottom:5),
+                            child: Icon(Icons.calendar_today,
+                                color: Colors.grey),
                           ),
-                        ),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(top:5,bottom:5),
-                          child: Icon(
-                            Icons.location_on,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        Text(address,
-                            style: TextStyle(
-                              fontSize: 5.0,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.grey,
-                              fontFamily: 'Lato',
-                              decoration: TextDecoration.none,
-                            )),
-                      ],
-                    ),
-                    Row(
-                      children: [
-                        Container(
-                          margin: EdgeInsets.only(top:5,bottom:5),
-                          child: Icon(
-                            Icons.access_time,
-                            color: Colors.grey,
-                          ),
-                        ),
-                        Text(widget.partyModel.PartyTime,
+                          Text(
+                            widget.partyModel.Partydate,
                             style: TextStyle(
                               fontSize: 13.0,
                               fontWeight: FontWeight.bold,
                               color: Colors.grey,
                               fontFamily: 'Lato',
                               decoration: TextDecoration.none,
-                            )),
-                      ],
-                    ),
-                  ],
-                )),
+                            ),
+                          ),
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(top:5,bottom:5),
+                            child: Icon(
+                              Icons.location_on,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          Expanded(child:Container(
+                            child: Text(address,
+                                style: TextStyle(
+                                  fontSize: 13.0,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.grey,
+                                  fontFamily: 'Lato',
+                                  decoration: TextDecoration.none,
+                                )),
+                          ),)
+                        ],
+                      ),
+                      Row(
+                        children: [
+                          Container(
+                            margin: EdgeInsets.only(top:5,bottom:5),
+                            child: Icon(
+                              Icons.access_time,
+                              color: Colors.grey,
+                            ),
+                          ),
+                          Text(widget.partyModel.PartyTime,
+                              style: TextStyle(
+                                fontSize: 13.0,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.grey,
+                                fontFamily: 'Lato',
+                                decoration: TextDecoration.none,
+                              )),
+                        ],
+                      ),
+                    ],
+                  )),
+            ),
             /*Container(
               margin: EdgeInsets.only(bottom: 10.0, left: 50),
               child: Image(
@@ -341,17 +347,19 @@ class _PartyDesignState extends State<PartyDesign> {
                 },
               ),
               Text('${countLikes}'),
+              IconButton(
+                icon: Icon(
+                  Icons.comment,
+                  color: Color(0xFFF87125),
+                ),
+                onPressed: () {
+                  print('se presionó el botón de commnent');
+                },
+                //    label: Text('128')
+              ),
+              Text('0'),
             ],
           ),
-          FlatButton.icon(
-              onPressed: () {
-                print('se presionó el botón de commnent');
-              },
-              icon: Icon(
-                Icons.comment,
-                color: Color(0xFFF87125),
-              ),
-              label: Text('128')),
         ],
       ),
     );

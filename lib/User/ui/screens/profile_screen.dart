@@ -66,8 +66,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
       print('No logueado');
       return Stack(
         children: <Widget>[
+          Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [Center(child: Text('Usuario no logueado. Haz Login', style: TextStyle(
+              fontSize: 25.0,
+              fontWeight: FontWeight.bold,
+              color: Colors.black,
+              fontFamily: 'Lato',
+              decoration: TextDecoration.none,
+            ),))],
+          )
+        ],
+      );
+      return Stack(
+        children: <Widget>[
           ListView(
-            children: <Widget>[Text('Usuario no logueado. Haz Login')],
+            children: <Widget>[
+              Center(child: Text('Usuario no logueado. Haz Login'))
+            ],
           ),
         ],
       );
@@ -79,7 +95,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         name: snapshot.data.displayName,
         email: snapshot.data.email,
         photoURL: snapshot.data.photoUrl,
-       // followers: snapshot.data.followers,
+        // followers: snapshot.data.followers,
       );
 
       return Stack(children: <Widget>[
