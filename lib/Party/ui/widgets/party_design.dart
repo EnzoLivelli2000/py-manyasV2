@@ -7,6 +7,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:like_button/like_button.dart';
+import 'package:manyas_v2/Comment/ui/screens/comment_screen.dart';
 import 'package:manyas_v2/Party/model/party_model.dart';
 import 'package:manyas_v2/Post/model/post_model.dart';
 import 'package:manyas_v2/User/bloc/user_bloc.dart';
@@ -30,44 +31,46 @@ class _PartyDesignState extends State<PartyDesign> {
   String address = '';
   final String PARTIES = 'parties';
 
-  Future<bool> onLikeButtonTapped(bool isLiked) async{
+  Future<bool> onLikeButtonTapped(bool isLiked) async {
     print('se presionó el botón de like ${isLiked}');
     print('widget.postModel.pid ${widget.partyModel.pid}');
     String uidCurrentUser = await FirebaseAuth.instance.currentUser.uid;
-    await userBloc.updateLikeData(PARTIES, widget.partyModel.pid, isLiked, uidCurrentUser);
+    await userBloc.updateLikeData(
+        PARTIES, widget.partyModel.pid, isLiked, uidCurrentUser);
 
     return !isLiked;
   }
 
-  bool getColorLikeButton(){
+  bool getColorLikeButton() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _asyncColorLikeButton();
     });
   }
 
-  void getLengthLike(){
+  void getLengthLike() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _asyncLengthLike();
     });
   }
 
-  void convertGeoPointToAddress(){
+  void convertGeoPointToAddress() {
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       _asyncAddress();
     });
   }
 
-  _asyncColorLikeButton() async{
+  _asyncColorLikeButton() async {
     String uidCurrentUser = await FirebaseAuth.instance.currentUser.uid;
-    bool aux = await userBloc.ColorLikeButton(PARTIES, widget.partyModel.pid, uidCurrentUser);
+    bool aux = await userBloc.ColorLikeButton(
+        PARTIES, widget.partyModel.pid, uidCurrentUser);
 
-    if(aux == null){
+    if (aux == null) {
       if (mounted) {
         setState(() {
           colorLikeButton = false;
         });
       }
-    }else{
+    } else {
       if (mounted) {
         setState(() {
           colorLikeButton = aux;
@@ -76,7 +79,7 @@ class _PartyDesignState extends State<PartyDesign> {
     }
   }
 
-  _asyncLengthLike() async{
+  _asyncLengthLike() async {
     int aux = await userBloc.LengthLikes(PARTIES, widget.partyModel.pid);
     if (mounted) {
       setState(() {
@@ -85,23 +88,22 @@ class _PartyDesignState extends State<PartyDesign> {
     }
   }
 
-  _asyncAddress()async{
+  _asyncAddress() async {
     //print('latitude ${widget.partyModel.Partylocation.latitude} - longitude ${widget.partyModel.Partylocation.longitude}');
     //Coordinates coordinates = Coordinates(widget.partyModel.Partylocation.latitude, widget.partyModel.Partylocation.longitude);
 
     final latitude = widget.partyModel.Partylocation.latitude.toDouble();
-    final longitude =widget.partyModel.Partylocation.longitude.toDouble();
+    final longitude = widget.partyModel.Partylocation.longitude.toDouble();
 
     print('latitude $latitude - longitude $longitude');
 
-    final coordinates = new Coordinates(latitude, longitude );
+    final coordinates = new Coordinates(latitude, longitude);
 
     var aux = await Geocoder.local.findAddressesFromCoordinates(coordinates);
 
     setState(() {
       address = aux.first.addressLine;
     });
-
   }
 
   @override
@@ -138,8 +140,7 @@ class _PartyDesignState extends State<PartyDesign> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                    widget.userModel.name,
+                Text(widget.userModel.name,
                     overflow: TextOverflow.ellipsis,
                     style: TextStyle(
                       fontSize: 15.0,
@@ -148,8 +149,7 @@ class _PartyDesignState extends State<PartyDesign> {
                       fontFamily: 'Lato',
                       decoration: TextDecoration.none,
                     )),
-                Text( widget.partyModel.dateTimeNow.toString()
-                    .substring(0,10),
+                Text(widget.partyModel.dateTimeNow.toString().substring(0, 10),
                     style: TextStyle(
                       fontSize: 12.0,
                       fontWeight: FontWeight.bold,
@@ -174,7 +174,13 @@ class _PartyDesignState extends State<PartyDesign> {
           ),
           onPressed: () async {
             print('se presionó: borrar post');
-            await userBloc.deleteParty(widget.partyModel).then((value) =>('se borró de manera exitosa el post selecionado ')).catchError((onError) {print('Error al borrar el post ${onError}');});
+            await userBloc
+                .deleteParty(widget.partyModel)
+                .then((value) =>
+                    ('se borró de manera exitosa el post selecionado '))
+                .catchError((onError) {
+              print('Error al borrar el post ${onError}');
+            });
             await userBloc.deleteFile(widget.partyModel.V_I);
           },
         ));
@@ -198,7 +204,10 @@ class _PartyDesignState extends State<PartyDesign> {
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [Expanded(flex: 5,child: userData), Expanded(flex: 1,child:popUpMenuOption)],
+              children: [
+                Expanded(flex: 5, child: userData),
+                Expanded(flex: 1, child: popUpMenuOption)
+              ],
             ),
             Container(
               margin: EdgeInsets.only(left: 15, top: 110, right: 25),
@@ -215,10 +224,12 @@ class _PartyDesignState extends State<PartyDesign> {
                         fontFamily: 'Lato',
                         decoration: TextDecoration.none,
                       )),
-                  widget.partyModel.isAdult?Image(
-                    image: AssetImage('assets/images/limite-de-edad.png'),
-                    height: 30,
-                  ): new Container(),
+                  widget.partyModel.isAdult
+                      ? Image(
+                          image: AssetImage('assets/images/limite-de-edad.png'),
+                          height: 30,
+                        )
+                      : new Container(),
                 ],
               ),
             ),
@@ -254,9 +265,9 @@ class _PartyDesignState extends State<PartyDesign> {
                       Row(
                         children: <Widget>[
                           Container(
-                            margin: EdgeInsets.only(top:5,bottom:5),
-                            child: Icon(Icons.calendar_today,
-                                color: Colors.grey),
+                            margin: EdgeInsets.only(top: 5, bottom: 5),
+                            child:
+                                Icon(Icons.calendar_today, color: Colors.grey),
                           ),
                           Text(
                             widget.partyModel.Partydate,
@@ -273,28 +284,30 @@ class _PartyDesignState extends State<PartyDesign> {
                       Row(
                         children: [
                           Container(
-                            margin: EdgeInsets.only(top:5,bottom:5),
+                            margin: EdgeInsets.only(top: 5, bottom: 5),
                             child: Icon(
                               Icons.location_on,
                               color: Colors.grey,
                             ),
                           ),
-                          Expanded(child:Container(
-                            child: Text(address,
-                                style: TextStyle(
-                                  fontSize: 13.0,
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.grey,
-                                  fontFamily: 'Lato',
-                                  decoration: TextDecoration.none,
-                                )),
-                          ),)
+                          Expanded(
+                            child: Container(
+                              child: Text(address,
+                                  style: TextStyle(
+                                    fontSize: 13.0,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.grey,
+                                    fontFamily: 'Lato',
+                                    decoration: TextDecoration.none,
+                                  )),
+                            ),
+                          )
                         ],
                       ),
                       Row(
                         children: [
                           Container(
-                            margin: EdgeInsets.only(top:5,bottom:5),
+                            margin: EdgeInsets.only(top: 5, bottom: 5),
                             child: Icon(
                               Icons.access_time,
                               color: Colors.grey,
@@ -353,7 +366,15 @@ class _PartyDesignState extends State<PartyDesign> {
                   color: Color(0xFFF87125),
                 ),
                 onPressed: () {
-                  print('se presionó el botón de commnent');
+                  print(
+                      'se abrirá una nueva pestaña para poder realizar comentarios');
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CommentScreen(
+                                partyModel: widget.partyModel,
+                                userModel: widget.userModel,
+                              )));
                 },
                 //    label: Text('128')
               ),
