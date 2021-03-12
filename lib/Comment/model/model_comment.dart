@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 
-class ModelComment {
-  final String cid;
+class CommentModel {
   final String dateTimeNow;
   final String content;
+  String cid;
   int likes;
 
-  ModelComment({
+  CommentModel({
     @required this.cid,
     @required this.dateTimeNow,
     @required this.content,

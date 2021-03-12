@@ -6,6 +6,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:geocoder/geocoder.dart';
+import 'package:google_maps_webservice/places.dart';
 import 'package:like_button/like_button.dart';
 import 'package:manyas_v2/Comment/ui/screens/comment_screen.dart';
 import 'package:manyas_v2/Party/model/party_model.dart';
@@ -29,7 +30,14 @@ class _PartyDesignState extends State<PartyDesign> {
   int countLikes;
   bool isLikedX = false;
   String address = '';
+  int commentLenght;
   final String PARTIES = 'parties';
+
+  void getCommentLength(){
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _asyncCommentLength();
+    });
+  }
 
   Future<bool> onLikeButtonTapped(bool isLiked) async {
     print('se presionó el botón de like ${isLiked}');
@@ -106,6 +114,15 @@ class _PartyDesignState extends State<PartyDesign> {
     });
   }
 
+  _asyncCommentLength() async{
+    int aux = await userBloc.commentLength(widget.partyModel);
+    if (mounted) {
+      setState(() {
+        commentLenght = aux;
+      });
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -117,6 +134,7 @@ class _PartyDesignState extends State<PartyDesign> {
   Widget build(BuildContext context) {
     getColorLikeButton();
     getLengthLike();
+    getCommentLength();
     userBloc = BlocProvider.of<UserBloc>(context);
 
     final userData = Container(
@@ -371,14 +389,16 @@ class _PartyDesignState extends State<PartyDesign> {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
-                          builder: (context) => CommentScreen(
-                                partyModel: widget.partyModel,
-                                userModel: widget.userModel,
-                              )));
+                          builder: (BuildContext context) => CommentScreen(
+                            partyModel: widget.partyModel,
+                            userModel: widget.userModel,
+                            type_post: PARTIES,
+                          )
+                      ));
                 },
                 //    label: Text('128')
               ),
-              Text('0'),
+              Text('${commentLenght}'),
             ],
           ),
         ],

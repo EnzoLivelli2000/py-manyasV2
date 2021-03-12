@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:manyas_v2/Comment/model/model_comment.dart';
+import 'package:manyas_v2/Comment/ui/widgets/other_comments_widget.dart';
 import 'package:manyas_v2/Party/model/party_model.dart';
 import 'package:manyas_v2/Party/ui/widgets/party_design.dart';
 import 'package:manyas_v2/Party/ui/widgets/party_friend_design.dart';
@@ -15,6 +17,7 @@ class CloudFirestoreAPI {
   final String USERS = 'users';
   final String POSTS = 'posts';
   final String PARTIES = 'parties';
+  final String COMMENTS = 'comments';
 
   final FirebaseFirestore _db = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -509,7 +512,7 @@ class CloudFirestoreAPI {
   }
 
   Future<int> LengthLikes(String COLLECTION, String pUid) async {
-    DocumentReference refPosts = _db.collection(COLLECTION).doc((pUid));
+    DocumentReference refPosts = _db.collection(COLLECTION).doc(pUid);
     DocumentSnapshot documentSnapshot = await refPosts.get();
 
     return documentSnapshot.data()['likes'];
@@ -537,6 +540,7 @@ class CloudFirestoreAPI {
       'userOwner': _db.doc('${USERS}/${uid}'), //este dato se carga al añadir este documento a la colección
       'status': party.status,
       'likes': party.likes,
+      'Comments' : [],
     }).then((DocumentReference dr) {
       dr.get().then((DocumentSnapshot snapshot) async {
 
@@ -609,7 +613,8 @@ class CloudFirestoreAPI {
       //final String targetid = element.reference.collection('partyTarget_people').id;
       CollectionReference partyRef = _db.collection(PARTIES);
       DocumentReference refUsers = _db.collection(USERS).doc(uid);
-
+      CollectionReference refComments = _db.collection(COMMENTS);
+      QuerySnapshot querySnapshotComments = await refComments.get();
       print('targetID ${targetid}');
 
       await partyRef
@@ -636,6 +641,8 @@ class CloudFirestoreAPI {
       }).then((value) =>
           print('se borró el post -> (${pid}) en la lista de usuario -> (${refUsers.id})'))
           .catchError((onError) => print('Error ${onError}'));
+
+      deleteComments(pid); //Delete comments from postParty
     });
   }
 
@@ -716,4 +723,123 @@ class CloudFirestoreAPI {
 
     return profileParties;
   }
+
+  /*COMMENT*************************************************************************************************************************************/
+
+  Future<void> sendComment(CommentModel comment, String type_post, String postID) async {
+    CollectionReference refComment = _db.collection(COMMENTS);
+    String uid = await _auth.currentUser.uid;
+    //var COLLECTION_REFERENCE_POST_OWNER = '';
+
+    print('refComment ${refComment.id}');
+
+    print('postID ${postID}');
+
+    print('type_post ${type_post}');
+
+    switch (type_post) {
+      case 'posts':
+
+        await refComment.add({
+          'cid': comment.cid,
+          'dateTimeNow': comment.dateTimeNow,
+          'content': comment.content,
+          'likes': comment.likes,
+          'userOwner': _db.doc('${USERS}/${uid}'), //este dato se carga al añadir este documento a la colección
+          'postOwner': _db.doc('${POSTS}/${postID}'), //este dato se carga al añadir este documento a la colección
+        });
+        break;
+      case 'parties':
+
+        await refComment.add({
+          'dateTimeNow': comment.dateTimeNow,
+          'content': comment.content,
+          'likes': comment.likes,
+          'userOwner': _db.doc('${USERS}/${uid}'), //este dato se carga al añadir este documento a la colección
+          'postOwner': _db.doc('${PARTIES}/${postID}'), //este dato se carga al añadir este documento a la colección
+        }).then((DocumentReference dr) {
+          dr.get().then((DocumentSnapshot snapshot) {
+            DocumentReference refParties = _db.collection(PARTIES).doc(postID);
+            refParties.updateData({
+              'Comments':
+              FieldValue.arrayUnion([_db.doc('${COMMENTS}/${snapshot.id}')]),
+            });
+            DocumentReference commentUpdate = _db.collection(COMMENTS).doc(snapshot.id);
+            commentUpdate.updateData({
+              'cid': snapshot.id,
+            });
+          });
+        });
+        break;
+      case 'stories':
+        //colleciton_reference_owner = STORIES;
+        break;
+    }
+  }
+
+  Future<int> commentLength(PartyModel party)async{
+    String uid = await _auth.currentUser.uid;
+    DocumentReference refComments = _db.collection(PARTIES).doc(party.pid);
+    DocumentSnapshot documentSnapshot = await refComments.get();
+
+    var aux = [];
+    aux = documentSnapshot.data()['Comments'];
+
+    if(aux.isEmpty){
+      return 0;
+    }else{
+      return aux.length;
+    }
+
+  }
+
+  Future<void> deleteComments(String postID) async {
+    CollectionReference refComment = _db.collection(COMMENTS);
+    //var COLLECTION_REFERENCE_POST_OWNER = '';
+
+    print('refComment ${refComment}');
+
+    QuerySnapshot querySnapshot = await refComment
+        .where("postOwner",
+        isEqualTo: Firestore.instance
+            .document("${CloudFirestoreAPI().PARTIES}/${postID}"))
+        // ignore: missing_return
+        .get().then((value){
+          value.docs.forEach((element) {
+              refComment.doc(element.id).delete().then((value) => print('se borró los comentarios asociados a al post en la base de dato COMMENTS'));
+          });
+    });
+  }
+
+  Future<List<OtherCommentWidget>> buildComments(PartyModel partyModel, UserModel userModel) async {
+    List<OtherCommentWidget> commentWidget = List<OtherCommentWidget>();
+    //DocumentReference documentReference = _db.collection(PARTIES).doc(partyModel.pid);
+    //DocumentSnapshot documentSnapshot = await documentReference.get();
+
+    CollectionReference collectionReference = _db.collection(COMMENTS);
+
+    //List listComment = documentSnapshot.data()['Comments'];
+
+    await collectionReference
+        .where("postOwner",
+        isEqualTo: Firestore.instance
+            .document("${CloudFirestoreAPI().PARTIES}/${partyModel.pid}"))
+    // ignore: missing_return
+        .get().then((value){
+      value.docs.forEach((element) {
+        commentWidget.add(OtherCommentWidget(
+            userModel: userModel,
+            commentContent: element.data()['content'],
+            dateTimeNow: element.data()['dateTimeNow'],
+        ));
+      });
+    });
+
+    commentWidget.sort(
+            (a, b) => b.dateTimeNow.compareTo(a.dateTimeNow));
+
+    return commentWidget;
+
+  }
+
 }

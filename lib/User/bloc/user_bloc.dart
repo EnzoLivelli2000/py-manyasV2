@@ -7,6 +7,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:manyas_v2/Comment/model/model_comment.dart';
+import 'package:manyas_v2/Comment/ui/widgets/other_comments_widget.dart';
 import 'package:manyas_v2/Party/model/party_model.dart';
 import 'package:manyas_v2/Party/ui/widgets/party_design.dart';
 import 'package:manyas_v2/Party/ui/widgets/party_friend_design.dart';
@@ -179,6 +181,16 @@ class UserBloc implements Bloc {
   //Case 10 Mostrar los datos del usuario amigo(en esta función se elimina la opción de borrar party)
   List<PartyFriendDesign> buildMyFriendParties(
       List<DocumentSnapshot> postListSnapshot, UserModel userModel) => _cloudFirestoreRepository.buildMyFriendParties(postListSnapshot, userModel);
+
+
+  /*COMMENT*********************************************************************************************************************************************************************************/
+
+  Future<void> sendComment(CommentModel comment, String type_post, String postID) => _cloudFirestoreRepository.sendComment(comment, type_post, postID);
+
+  Future<int> commentLength(PartyModel party) => _cloudFirestoreRepository.commentLength(party);
+
+  Future<List<OtherCommentWidget>> buildComments(PartyModel partyModel, UserModel userModel) => _cloudFirestoreRepository.buildComments(partyModel, userModel);
+
   @override
   void dispose() {
     // TODO: implement dispose

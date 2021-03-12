@@ -2,6 +2,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:manyas_v2/Comment/model/model_comment.dart';
+import 'package:manyas_v2/Comment/ui/widgets/other_comments_widget.dart';
 import 'package:manyas_v2/Party/model/party_model.dart';
 import 'package:manyas_v2/Party/ui/widgets/party_design.dart';
 import 'package:manyas_v2/Party/ui/widgets/party_friend_design.dart';
@@ -49,7 +51,6 @@ class CloudFirestoreRepository {
 
   /*PARTIES*********************************************************************************************************************************************************************************/
 
-
   Future<void> updatePartyData(PartyModel party, var partyNumber, GeoPoint target) => _cloudFirestoreAPI.updatePartyData(party, partyNumber, target);
 
   List<PartyDesign> buildMyParties(List<DocumentSnapshot> placesListSnapshot,
@@ -62,4 +63,13 @@ class CloudFirestoreRepository {
 
   List<PartyFriendDesign> buildMyFriendParties(
       List<DocumentSnapshot> postListSnapshot, UserModel userModel) => _cloudFirestoreAPI.buildMyFriendParties(postListSnapshot, userModel);
+
+
+/*COMMENT*********************************************************************************************************************************************************************************/
+
+  Future<void> sendComment(CommentModel comment, String type_post, String postID) => _cloudFirestoreAPI.sendComment(comment, type_post, postID);
+
+  Future<int> commentLength(PartyModel party) => _cloudFirestoreAPI.commentLength(party);
+
+  Future<List<OtherCommentWidget>> buildComments(PartyModel partyModel, UserModel userModel) => _cloudFirestoreAPI.buildComments(partyModel, userModel);
 }
