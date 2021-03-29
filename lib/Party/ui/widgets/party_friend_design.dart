@@ -10,6 +10,7 @@ import 'package:geocoder/geocoder.dart';
 import 'package:google_maps_webservice/directions.dart';
 import 'package:google_maps_webservice/geocoding.dart';
 import 'package:like_button/like_button.dart';
+import 'package:manyas_v2/Comment/ui/screens/comment_screen.dart';
 import 'package:manyas_v2/Party/model/party_model.dart';
 import 'package:manyas_v2/Post/model/post_model.dart';
 import 'package:manyas_v2/User/bloc/user_bloc.dart';
@@ -31,8 +32,14 @@ class _PartyFriendDesignState extends State<PartyFriendDesign> {
   int countLikes;
   bool isLikedX = false;
   String address = '';
+  int commentLenght;
   final String PARTIES = 'parties';
 
+  void getCommentLength(){
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      _asyncCommentLength();
+    });
+  }
 
   Future<bool> onLikeButtonTapped(bool isLikedX) async{
     String uidCurrentUser = await FirebaseAuth.instance.currentUser.uid;
@@ -107,6 +114,15 @@ class _PartyFriendDesignState extends State<PartyFriendDesign> {
 
   }
 
+  _asyncCommentLength() async{
+    int aux = await userBloc.commentLength(widget.partyModel);
+    if (mounted) {
+      setState(() {
+        commentLenght = aux;
+      });
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
@@ -118,6 +134,7 @@ class _PartyFriendDesignState extends State<PartyFriendDesign> {
   Widget build(BuildContext context) {
     getColorLikeButton();
     getLengthLike();
+    getCommentLength();
     userBloc = BlocProvider.of<UserBloc>(context);
 
 
@@ -334,15 +351,24 @@ class _PartyFriendDesignState extends State<PartyFriendDesign> {
               ),
               Text('${countLikes}'),
               IconButton(
-                onPressed: () {
-                  print('se presionó el botón de commnent');
-                },
                 icon: Icon(
                   Icons.comment,
                   color: Color(0xFFF87125),
-                ),
+                ),onPressed: () {
+                print(
+                    'se abrirá una nueva pestaña para poder realizar comentarios');
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (BuildContext context) => CommentScreen(
+                          partyModel: widget.partyModel,
+                          userModel: widget.userModel,
+                          type_post: PARTIES,
+                        )
+                    ));
+              },
               ),
-              Text('0'),
+              Text('${commentLenght}'),
             ],
           ),
         ],

@@ -189,6 +189,8 @@ class UserBloc implements Bloc {
 
   Future<int> commentLength(PartyModel party) => _cloudFirestoreRepository.commentLength(party);
 
+  Future<void> deleteComments(String postID) => _cloudFirestoreRepository.deleteComments(postID);
+
   Future<List<OtherCommentWidget>> buildComments(PartyModel partyModel, UserModel userModel) => _cloudFirestoreRepository.buildComments(partyModel, userModel);
 
   @override

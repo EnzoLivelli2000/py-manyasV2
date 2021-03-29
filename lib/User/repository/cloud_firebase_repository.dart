@@ -71,5 +71,7 @@ class CloudFirestoreRepository {
 
   Future<int> commentLength(PartyModel party) => _cloudFirestoreAPI.commentLength(party);
 
+  Future<void> deleteComments(String postID) => _cloudFirestoreAPI.deleteComments(postID);
+
   Future<List<OtherCommentWidget>> buildComments(PartyModel partyModel, UserModel userModel) => _cloudFirestoreAPI.buildComments(partyModel, userModel);
 }

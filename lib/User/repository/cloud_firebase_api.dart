@@ -778,7 +778,6 @@ class CloudFirestoreAPI {
   }
 
   Future<int> commentLength(PartyModel party)async{
-    String uid = await _auth.currentUser.uid;
     DocumentReference refComments = _db.collection(PARTIES).doc(party.pid);
     DocumentSnapshot documentSnapshot = await refComments.get();
 
@@ -799,7 +798,7 @@ class CloudFirestoreAPI {
 
     print('refComment ${refComment}');
 
-    QuerySnapshot querySnapshot = await refComment
+    await refComment
         .where("postOwner",
         isEqualTo: Firestore.instance
             .document("${CloudFirestoreAPI().PARTIES}/${postID}"))
@@ -813,13 +812,15 @@ class CloudFirestoreAPI {
 
   Future<List<OtherCommentWidget>> buildComments(PartyModel partyModel, UserModel userModel) async {
     List<OtherCommentWidget> commentWidget = List<OtherCommentWidget>();
-    //DocumentReference documentReference = _db.collection(PARTIES).doc(partyModel.pid);
+    String uid = await _auth.currentUser.uid;
+
+    DocumentSnapshot user = await _db.collection(USERS).doc(uid).get();
     //DocumentSnapshot documentSnapshot = await documentReference.get();
 
     CollectionReference collectionReference = _db.collection(COMMENTS);
 
     //List listComment = documentSnapshot.data()['Comments'];
-
+    userModel.uid == user.data()['uid'];
     await collectionReference
         .where("postOwner",
         isEqualTo: Firestore.instance
@@ -828,9 +829,10 @@ class CloudFirestoreAPI {
         .get().then((value){
       value.docs.forEach((element) {
         commentWidget.add(OtherCommentWidget(
-            userModel: userModel,
+            photoUrlUser: user.data()['photoURL'],
             commentContent: element.data()['content'],
             dateTimeNow: element.data()['dateTimeNow'],
+            isDeleteComment: userModel.uid == user.data()['uid']? true : false,
         ));
       });
     });
