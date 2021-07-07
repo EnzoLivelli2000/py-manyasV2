@@ -3,17 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:manyas_v2/Map/ui/screens/example2/create_party_screen.dart';
 import 'package:manyas_v2/Map/ui/screens/example2/join_screen.dart';
-import 'package:manyas_v2/Map/ui/screens/example1/DirectionsProvider.dart';
-import 'package:manyas_v2/Map/ui/screens/example1/main_map_screen.dart';
 import 'package:manyas_v2/Map/ui/screens/map_screen.dart';
-import 'package:manyas_v2/Map/ui/screens/example1/map_screen2.dart';
-import 'package:manyas_v2/Party/ui/screens/prueba_party.dart';
-import 'package:manyas_v2/Storie/ui/screens/prueba_storie.dart';
 import 'package:manyas_v2/User/bloc/user_bloc.dart';
 import 'package:manyas_v2/User/ui/screens/profile_screen.dart';
 import 'package:manyas_v2/User/ui/screens/search_people_screen.dart';
 import 'package:manyas_v2/screens/home_screen.dart';
-import 'package:provider/provider.dart';
 
 import '../Map/ui/screens/example2/join_screen.dart';
 
@@ -71,7 +65,7 @@ class ButtonNavigationBarPrincipalMenu extends StatelessWidget {
                   builder: (BuildContext context){
                     return BlocProvider<UserBloc>(
                       creator:(_context, _bag) =>UserBloc(),
-                      child: JoinScreen(),
+                      child: JoinScreen(), //ESTO ES EL ALGORITMO FUNCIONAL DE LAS FIESTAS
                     );
                   }
               );

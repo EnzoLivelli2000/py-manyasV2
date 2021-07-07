@@ -20,9 +20,9 @@ class CreatePartyScreen extends StatefulWidget {
 
   CreatePartyScreen(
       {Key key,
-      this.image,
-      this.controllerTitleParty,
-      this.controllerDescriptionParty,
+        this.image,
+        this.controllerTitleParty,
+        this.controllerDescriptionParty,
       });
 
   @override
@@ -30,7 +30,7 @@ class CreatePartyScreen extends StatefulWidget {
 }
 
 class _CreatePartyScreenState extends State<CreatePartyScreen> {
-  final LatLng fromPoint = LatLng(-12.211151, -77.015562);
+  final LatLng fromPoint = LatLng(-12.212992, -77.013275);
 
   //Coords _coordsfromPoint = Coords(-12.211151, -77.015562);
   //Coords _coordstoPoint = Coords(-12.209442, -77.023802);
@@ -142,17 +142,17 @@ class _CreatePartyScreenState extends State<CreatePartyScreen> {
           children: [
             Positioned.fill(
               child: GoogleMap(
-                ////compassEnabled: true,
-                //myLocationEnabled: true,
-                //myLocationButtonEnabled: true,
-                ////rotateGesturesEnabled: true,
+                compassEnabled: true,
+                myLocationEnabled: true,
+                myLocationButtonEnabled: true,
+                rotateGesturesEnabled: true,
                 zoomGesturesEnabled: true,
                 initialCameraPosition: CameraPosition(
                   target: fromPoint,
                   zoom: 14.5,
                 ),
                 onMapCreated: (GoogleMapController controller) =>
-                    _controller = controller,
+                _controller = controller,
                 ////polylines: polylines,
                 markers: markers,
               ),
@@ -166,6 +166,10 @@ class _CreatePartyScreenState extends State<CreatePartyScreen> {
                   {waypointBuilder, getDirections, relocate, waypointsMgr}) {
                 if (origCtrl.text.isEmpty) {
                   relocate(AddressId.origin, fromPoint.toCoords());
+                }else{
+                  relocate(AddressId.origin, fromPoint.toCoords());
+                  print('toCoo000000000000000000000000000000000000000000000000000000000000000000000000000000000rds ${fromPoint.toCoords()}');
+                  print('origiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiin ${AddressId.origin}');
                 }
                 return Positioned(
                   top: 8,
@@ -247,14 +251,14 @@ class _CreatePartyScreenState extends State<CreatePartyScreen> {
                       context,
                       MaterialPageRoute(
                           builder: (BuildContext context) => AddPartyScreen2(
-                                image: widget.image,
-                                controllerTitleParty:
-                                    widget.controllerTitleParty,
-                                controllerDescriptionParty:
-                                widget.controllerDescriptionParty,
-                                partyNumber: partyNumber,
-                                target: GeoPoint(target.latitude, target.longitude),
-                              )));
+                            image: widget.image,
+                            controllerTitleParty:
+                            widget.controllerTitleParty,
+                            controllerDescriptionParty:
+                            widget.controllerDescriptionParty,
+                            partyNumber: partyNumber,
+                            target: GeoPoint(target.latitude, target.longitude),
+                          )));
                 },
                 child: Icon(Icons.check),
               ),
