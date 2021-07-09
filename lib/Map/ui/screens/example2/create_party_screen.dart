@@ -1,320 +1,115 @@
-import 'dart:io';
-
-import 'package:address_search_field/address_search_field.dart';
-import 'package:bloc_provider/bloc_provider.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:manyas_v2/Map/ui/screens/example2/maps_screen.dart';
-import 'package:manyas_v2/Party/ui/screens/add_party_screen2.dart';
-import 'package:manyas_v2/User/bloc/user_bloc.dart';
-import 'package:manyas_v2/User/model/user_model.dart';
-import 'package:manyas_v2/widgets/text_input.dart';
+import 'package:manyas_v2/Map/ui/screens/example2/address_search.dart';
+import 'package:manyas_v2/Map/ui/screens/example2/place_service.dart';
+import 'package:uuid/uuid.dart';
 
-class CreatePartyScreen extends StatefulWidget {
-  File image;
+class CreatePartyScreen extends StatelessWidget {
+  // This widget is the root of your application.
   String controllerTitleParty;
   String controllerDescriptionParty;
   bool fullSize = false;
 
+  var image;
+
   CreatePartyScreen(
       {Key key,
-        this.image,
-        this.controllerTitleParty,
-        this.controllerDescriptionParty,
+        @required this.image,
+        @required this.controllerTitleParty,
+        @required this.controllerDescriptionParty,
       });
-
   @override
-  _CreatePartyScreenState createState() => _CreatePartyScreenState();
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Google Places Demo',
+      theme: ThemeData(
+        primarySwatch: Colors.amber,
+        visualDensity: VisualDensity.adaptivePlatformDensity,
+      ),
+      home: MyHomePage(title: 'Places Autocomplete Demo'),
+    );
+  }
 }
 
-class _CreatePartyScreenState extends State<CreatePartyScreen> {
-  final LatLng fromPoint = LatLng(-12.212992, -77.013275);
+class MyHomePage extends StatefulWidget {
+  MyHomePage({Key key, this.title}) : super(key: key);
 
-  //Coords _coordsfromPoint = Coords(-12.211151, -77.015562);
-  //Coords _coordstoPoint = Coords(-12.209442, -77.023802);
+  final String title;
 
-  final origCtrl = TextEditingController();
+  @override
+  _MyHomePageState createState() => _MyHomePageState();
+}
 
-  final destCtrl = TextEditingController();
+class _MyHomePageState extends State<MyHomePage> {
+  final _controller = TextEditingController();
+  String _streetNumber = '';
+  String _street = '';
+  String _city = '';
+  String _zipCode = '';
 
-  final polylines = Set<Polyline>();
-
-  // final markers = Set<Marker>();
-
-  final geoMethods = GeoMethods(
-    googleApiKey: 'AIzaSyANy_bFo3_RvGM1oP2K-M6Qrkq1o6uLIZg',
-    language: 'es-419',
-    // country: 'ec', /// commented for use case
-    countryCodes: [
-      /// to autocomplete addresses from multicountry
-      'ec', //ecuador
-      'co', //colombia
-      'ar', //argentina
-      'br', //brazil
-      'pe', // peru
-    ],
-  );
-  GoogleMapController _controller;
-  Set<Marker> markers = Set();
-  LatLng target = LatLng(0, 0);
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
-    UserBloc userBloc = BlocProvider.of<UserBloc>(context);
-    if (widget.image.path == null) {
-      print('Entro a widget.image.path == null');
-      Navigator.of(context).pop();
-      return StreamBuilder(
-        stream: userBloc.authStatus,
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                ],
-              );
-            case ConnectionState.none:
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                ],
-              );
-            case ConnectionState.active:
-              return showData(snapshot);
-            case ConnectionState.done:
-              return showData(snapshot);
-            default:
-          }
-        },
-      );
-    } else {
-      return StreamBuilder(
-        stream: userBloc.authStatus,
-        builder: (BuildContext context, AsyncSnapshot snapshot) {
-          switch (snapshot.connectionState) {
-            case ConnectionState.waiting:
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                ],
-              );
-            case ConnectionState.none:
-              return Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  CircularProgressIndicator(),
-                ],
-              );
-            case ConnectionState.active:
-              return showData(snapshot);
-            case ConnectionState.done:
-              return showData(snapshot);
-            default:
-          }
-        },
-      );
-    };
-  }
-
-  Scaffold showData(AsyncSnapshot snapshot) {
-    var userAux = UserModel(
-      uid: snapshot.data.uid,
-      name: snapshot.data.displayName,
-      email: snapshot.data.email,
-      photoURL: snapshot.data.photoUrl,
-      // followers: snapshot.data.followers,
-    );
-
     return Scaffold(
-      resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        title: Text('Plugin example app'),
+        title: Text(widget.title),
       ),
       body: Container(
-        margin: EdgeInsets.only(bottom: 45),
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: GoogleMap(
-                compassEnabled: true,
-                myLocationEnabled: true,
-                myLocationButtonEnabled: true,
-                rotateGesturesEnabled: true,
-                zoomGesturesEnabled: true,
-                initialCameraPosition: CameraPosition(
-                  target: fromPoint,
-                  zoom: 14.5,
-                ),
-                onMapCreated: (GoogleMapController controller) =>
-                _controller = controller,
-                ////polylines: polylines,
-                markers: markers,
-              ),
-            ),
-            RouteSearchBox(
-              /// we need to specify a countryCode to get routes because countryCode parameter was commented
-              geoMethods: geoMethods.copyWith(countryCodeParam: 'pe'),
-              originCtrl: origCtrl,
-              destinationCtrl: destCtrl,
-              builder: (context, originBuilder, destinationBuilder,
-                  {waypointBuilder, getDirections, relocate, waypointsMgr}) {
-                if (origCtrl.text.isEmpty) {
-                  relocate(AddressId.origin, fromPoint.toCoords());
+        margin: EdgeInsets.only(left: 20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            TextField(
+              controller: _controller,
+              readOnly: true,
+              onTap: () async {
+                // generate a new token here
+                final sessionToken = Uuid().v4();
+                print('sessionToken $sessionToken ');
+                final Suggestion result = await showSearch(
+                  context: context,
+                  delegate: AddressSearch(sessionToken),
+                ).catchError((onError){print('EL GRAN ERROR ES ESTE -> $onError');});
+
+                // This will change the text displayed in the TextField
+                if (result != null) {
+                  final placeDetails = await PlaceApiProvider(sessionToken)
+                      .getPlaceDetailFromId(result.placeId);
+                  setState(() {
+                    _controller.text = result.description;
+                    _streetNumber = placeDetails.streetNumber;
+                    _street = placeDetails.street;
+                    _city = placeDetails.city;
+                    _zipCode = placeDetails.zipCode;
+                  });
                 }else{
-                  relocate(AddressId.origin, fromPoint.toCoords());
-                  print('toCoo000000000000000000000000000000000000000000000000000000000000000000000000000000000rds ${fromPoint.toCoords()}');
-                  print('origiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiin ${AddressId.origin}');
+                  print('ERROR EN result $result');
                 }
-                return Positioned(
-                  top: 8,
-                  left: 12,
-                  right: 12,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(horizontal: 15.0),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(10),
-                      color: Colors.white,
-                    ),
-                    //color: Colors.white,
-                    height: 50.0,
-                    child: Column(
-                      children: [
-                        TextField(
-                          controller: origCtrl,
-                          onTap: () => showDialog(
-                            context: context,
-                            builder: (context) => originBuilder.buildDefault(
-                              builder: AddressDialogBuilder(),
-                              onDone: (address) {
-                                print(
-                                    'Latitude de la fiesta ${address.coords.latitude}');
-                                print(
-                                    'Longitude de la fiesta ${address.coords.longitude}');
-
-                                target = LatLng(address.coords.latitude,
-                                    address.coords.longitude);
-
-                                setState(() {
-                                  markers = Set();
-                                  markers.add(Marker(
-                                    markerId: MarkerId('target'),
-                                    position: target,
-                                  ));
-                                });
-
-                                _controller.animateCamera(
-                                    CameraUpdate.newLatLng(target));
-                              },
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                );
               },
-            ),
-            Positioned(
-              bottom: 25,
-              left: 0,
-              right: 0,
-              child: FloatingActionButton(
-                onPressed: () async {
-                  //UserId
-                  var userId = userAux.uid;
-
-                  //PartyNumber
-                  var partyNumber = _calcPartyNumber(userId, target);
-
-                  /*//Create a Party
-                  await Firestore.instance
-                      .collection('partiesExample2')
-                      .document(partyNumber)
-                      .setData({
-                    'target': GeoPoint(target.latitude, target.longitude)
-                  });*/
-
-                  /*//Open the map
-                  Navigator.of(context).push(
-                      MapsScreen.route(partyNumber, userId)
-                  );*/
-
-
-                  //Go to the second screen -> add_party_screen2
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (BuildContext context) => AddPartyScreen2(
-                            image: widget.image,
-                            controllerTitleParty:
-                            widget.controllerTitleParty,
-                            controllerDescriptionParty:
-                            widget.controllerDescriptionParty,
-                            partyNumber: partyNumber,
-                            target: GeoPoint(target.latitude, target.longitude),
-                          )));
-                },
-                child: Icon(Icons.check),
+              decoration: InputDecoration(
+                icon: Container(
+                  width: 10,
+                  height: 10,
+                  child: Icon(
+                    Icons.home,
+                    color: Colors.black,
+                  ),
+                ),
+                hintText: "Enter your shipping address",
+                border: InputBorder.none,
+                contentPadding: EdgeInsets.only(left: 8.0, top: 16.0),
               ),
-            )
+            ),
+            SizedBox(height: 20.0),
+            Text('Street Number: $_streetNumber'),
+            Text('Street: $_street'),
+            Text('City: $_city'),
+            Text('ZIP Code: $_zipCode'),
           ],
-        ),
-      ),
-    );
-  }
-}
-
-String _calcPartyNumber(String userId, LatLng target) {
-  var tmp = "$userId;${target.latitude};${target.longitude}";
-  var tmpInt = tmp.hashCode;
-
-  var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  var result = '';
-
-  while (tmpInt > 0) {
-    var remainder = tmpInt % 36;
-    result = chars[remainder] + result;
-    tmpInt = tmpInt ~/ 36;
-  }
-  return result;
-}
-
-class Waypoints extends StatelessWidget {
-  const Waypoints(this.waypointsMgr, this.waypointBuilder);
-
-  final WaypointsManager waypointsMgr;
-  final AddressSearchBuilder waypointBuilder;
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            icon: Icon(Icons.add_location_alt),
-            onPressed: () => showDialog(
-              context: context,
-              builder: (context) => waypointBuilder.buildDefault(
-                builder: AddressDialogBuilder(),
-                onDone: (address) => null,
-              ),
-            ),
-          )
-        ],
-      ),
-      body: ValueListenableBuilder<List<Address>>(
-        valueListenable: waypointsMgr.valueNotifier,
-        builder: (context, value, _) => ListView.separated(
-          itemCount: value.length,
-          separatorBuilder: (BuildContext context, int index) => Divider(),
-          itemBuilder: (BuildContext context, int index) =>
-              ListTile(title: Text(value[index].reference)),
         ),
       ),
     );
