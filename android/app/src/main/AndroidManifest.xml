@@ -16,7 +16,7 @@
 
         <!--<meta-data android:name="com.mapbox.token" android:value="pk.eyJ1IjoiZW56b2xpdmVsbGkyMDAwIiwiYSI6ImNra3NzaGh6cTBvYXUyb3A2OHZ1MnpnZjAifQ.YQJaM3RfH52RedF49oY49w"/>-->
         <meta-data android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyANy_bFo3_RvGM1oP2K-M6Qrkq1o6uLIZg"/>
+            android:value="AIzaSyCMiZ5rfHCJ1kfZ-m_KmJ6CXbH8rKH8zcw"/>
 
         <activity
             android:name=".MainActivity"
